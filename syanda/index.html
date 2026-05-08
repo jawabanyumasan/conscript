@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syanda Transliterasi - Shavian x Sunda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .syanda-text {
+            font-size: 1.6rem;
+            line-height: 2.4rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        .notification {
+            transform: translateY(100px);
+            transition: transform 0.3s ease-out;
+        }
+        .notification.show {
+            transform: translateY(0);
+        }
+        #inputText, #outputText {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4 md:p-8">
+
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+        <!-- Header -->
+        <div class="bg-indigo-600 p-6 text-white">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Syanda Transliterasi</h1>
+                    <p class="text-indigo-100 text-sm">Abugida Shavian & Diakritik Sunda</p>
+                </div>
+                <button id="btnInfo" class="bg-white/20 hover:bg-white/30 p-2 rounded-full transition shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Switch Menu di bawah Judul -->
+            <div class="mt-5">
+                <button id="btnSwitch" class="bg-white text-indigo-600 px-4 py-2.5 rounded-xl transition flex items-center gap-3 text-sm font-bold shadow-md hover:bg-indigo-50 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span id="switchLabel">Mode: Latin → Syanda</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="p-6 space-y-6">
+            <!-- Input Area -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <label id="inputLabel" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Input: Latin</label>
+                    <div class="flex gap-2">
+                        <button id="btnCopyInput" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-md transition font-medium border border-slate-200">Salin Input</button>
+                        <button id="btnClear" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-md transition font-medium border border-red-100">Bersihkan</button>
+                    </div>
+                </div>
+                <textarea id="inputText" placeholder="Ketik teks di sini..." class="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition resize-none custom-scrollbar"></textarea>
+            </div>
+
+            <!-- Result Area -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <label id="outputLabel" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Hasil: Syanda</label>
+                    <button id="btnCopyOutput" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl transition shadow-lg shadow-indigo-200 font-bold active:scale-95">Salin Hasil</button>
+                </div>
+                <div id="outputText" class="w-full min-h-[160px] p-5 bg-indigo-50 border border-indigo-100 rounded-xl syanda-text text-slate-800 break-words custom-scrollbar whitespace-pre-wrap"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-slate-50 p-4 border-t border-slate-200 text-center">
+            <p class="text-sm font-bold text-slate-400 uppercase tracking-tighter">Created By Wahyudi</p>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50 modal backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50">
+                <h2 class="text-xl font-bold text-indigo-900">Panduan Aksara Syanda</h2>
+                <button id="btnCloseModal" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-6">
+                <section>
+                    <h3 class="font-bold text-indigo-600 mb-2">Abugida Syanda</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Syanda adalah sistem penulisan hibrida: bentuk **Shavian** sebagai konsonan dan diakritik **Sunda** sebagai vokal. Secara default, konsonan mengandung vokal 'a'. Gunakan pamaeh (᮪) untuk mematikan vokal.
+                    </p>
+                </section>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider border-b pb-1">Konsonan Dasar</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                            <span>𐑚 : Ba</span> <span>𐑗 : Ca</span>
+                            <span>𐑛 : Da</span> <span>𐑓 : Fa</span>
+                            <span>𐑜 : Ga</span> <span>𐑣 : Ha</span>
+                            <span>𐑙 : Nga</span> <span>𐑿 : Nya</span>
+                            <span>𐑖 : Sya</span> <span>𐑒 : Ka</span>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider border-b pb-1">Vokal & Penanda</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                            <span>𐑒ᮤ : Ki</span> <span>𐑒ᮥ : Ku</span>
+                            <span>𐑒ᮨ : Ke</span> <span>ᮦ𐑒 : Ké</span>
+                            <span>𐑒ᮧ : Ko</span> <span>𐑒᮪ : K (mati)</span>
+                            <span>𐑒ᮀ : Kang</span> <span>𐑒ᮢ : Kra</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notif" class="fixed bottom-8 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl notification z-[100] flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="notifMessage">Aksara Berhasil Disalin</span>
+    </div>
+
+    <script>
+        const input = document.getElementById('inputText');
+        const output = document.getElementById('outputText');
+        const btnClear = document.getElementById('btnClear');
+        const btnCopyInput = document.getElementById('btnCopyInput');
+        const btnCopyOutput = document.getElementById('btnCopyOutput');
+        const btnSwitch = document.getElementById('btnSwitch');
+        const switchLabel = document.getElementById('switchLabel');
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+        const btnInfo = document.getElementById('btnInfo');
+        const infoModal = document.getElementById('infoModal');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const notif = document.getElementById('notif');
+        const notifMsg = document.getElementById('notifMessage');
+
+        let isLatinToSyanda = true;
+
+        const SYANDA_MAP = {
+            'ng': '𐑙', 'ny': '𐑿', 'sy': '𐑖', 'th': '𐑑𐑣', 'dh': '𐑛𐑣', 'kh': '𐑒𐑣',
+            'b': '𐑚', 'c': '𐑗', 'd': '𐑛', 'f': '𐑓', 'g': '𐑜', 'h': '𐑣',
+            'j': '𐑡', 'k': '𐑒', 'l': '𐑤', 'm': '𐑥', 'n': '𐑯', 'p': '𐑐',
+            'r': '𐑮', 's': '𐑕', 't': '𐑑', 'v': '𐑝', 'w': '𐑢', 'y': '𐑘', 'z': '𐑟',
+            'q': '𐑒'
+        };
+
+        const VOWEL_MAP = {
+            'i': 'ᮤ', 'u': 'ᮥ', 'e': 'ᮨ', 'é': 'ᮦ', 'o': 'ᮧ', 'eu': 'ᮩ', 'a': 'INHERENT'
+        };
+
+        const MEDIAL_MAP = { 'y': 'ᮡ', 'r': 'ᮢ', 'l': 'ᮣ' };
+        const FINAL_MAP = { 'r': 'ᮁ', 'ng': 'ᮀ', 'h': 'ᮂ' };
+
+        // Inverse mapping yang lebih cerdas untuk menangani multigraphs (th, dh, dsb)
+        const INV_SYANDA = Object.fromEntries(Object.entries(SYANDA_MAP).map(([k,v]) => [v, k]));
+        const INV_VOWEL = Object.fromEntries(Object.entries(VOWEL_MAP).map(([k,v]) => [v, k === 'a' ? '' : k]));
+        const INV_MEDIAL = Object.fromEntries(Object.entries(MEDIAL_MAP).map(([k,v]) => [v, k]));
+        const INV_FINAL = Object.fromEntries(Object.entries(FINAL_MAP).map(([k,v]) => [v, k]));
+
+        function latinToSyanda(text) {
+            if (!text) return "";
+            return text.toLowerCase().split(/(\s+|\n)/).map(word => {
+                if (/^(\s+|\n)$/.test(word)) return word;
+                if (/^\d+$/.test(word)) return word;
+
+                let pos = 0;
+                let converted = "";
+                
+                while (pos < word.length) {
+                    let foundConsonant = "";
+                    if (pos + 1 < word.length && SYANDA_MAP[word.substr(pos, 2)]) {
+                        foundConsonant = word.substr(pos, 2);
+                        pos += 2;
+                    } else if (SYANDA_MAP[word[pos]]) {
+                        foundConsonant = word[pos];
+                        pos++;
+                    }
+
+                    let base = foundConsonant ? SYANDA_MAP[foundConsonant] : (word[pos] && /[aeioué]/.test(word[pos]) ? "𐑴" : "");
+                    
+                    if (base) {
+                        let medial = "";
+                        let vowel = "";
+                        let final = "";
+                        let vowelFound = false;
+
+                        if (pos < word.length && MEDIAL_MAP[word[pos]] && pos + 1 < word.length && /[aeioué]/.test(word[pos+1])) {
+                            medial = MEDIAL_MAP[word[pos]];
+                            pos++;
+                        }
+
+                        if (pos < word.length) {
+                            if (word.substr(pos, 2) === 'eu') {
+                                vowel = VOWEL_MAP['eu']; pos += 2; vowelFound = true;
+                            } else if (VOWEL_MAP[word[pos]] !== undefined) {
+                                vowel = VOWEL_MAP[word[pos]];
+                                if (vowel === 'INHERENT') vowel = "";
+                                pos++; vowelFound = true;
+                            }
+                        }
+
+                        if (pos < word.length) {
+                            if (word.substr(pos, 2) === 'ng' && (pos + 2 >= word.length || !/[aeioué]/.test(word[pos+2]))) {
+                                final = FINAL_MAP['ng']; pos += 2;
+                            } else if (word[pos] === 'r' && (pos + 1 >= word.length || !/[aeioué]/.test(word[pos+1]))) {
+                                final = FINAL_MAP['r']; pos++;
+                            } else if (word[pos] === 'h' && (pos + 1 >= word.length || !/[aeioué]/.test(word[pos+1]))) {
+                                final = FINAL_MAP['h']; pos++;
+                            } else if (!vowelFound && foundConsonant && !/[aeioué]/.test(word[pos])) {
+                                final = "᮪";
+                            }
+                        } else if (!vowelFound && foundConsonant) {
+                            final = "᮪";
+                        }
+
+                        if (vowel === 'ᮦ') converted += 'ᮦ' + base + medial + final;
+                        else converted += base + medial + vowel + final;
+                    } else {
+                        converted += word[pos] || "";
+                        pos++;
+                    }
+                }
+                return converted;
+            }).join('');
+        }
+
+        function syandaToLatin(text) {
+            if (!text) return "";
+            // Regex harus mencakup multigraphs Shavian th/dh/kh (kombinasi 2 karakter)
+            // Range Shavian: \u{10450}-\u{1047F}
+            const regex = /(ᮦ)?(𐑑𐑣|𐑛𐑣|𐑒𐑣|[\u{10450}-\u{1047F}])(ᮡ|ᮢ|ᮣ)?(ᮤ|ᮥ|ᮨ|ᮧ|ᮩ)?(ᮁ|ᮀ|ᮂ|᮪)?/gu;
+            
+            return text.replace(regex, (match, taling, base, medial, vowel, final) => {
+                let baseLat = base === '𐑴' ? '' : (INV_SYANDA[base] || "");
+                let medLat = INV_MEDIAL[medial] || "";
+                let vowLat = "";
+
+                if (taling) vowLat = "é";
+                else if (vowel) vowLat = INV_VOWEL[vowel];
+                else if (final === "᮪") vowLat = ""; // Mati, tidak ada vokal
+                else vowLat = "a"; // Abugida inherent
+
+                let finLat = final === "᮪" ? "" : (INV_FINAL[final] || "");
+                
+                return baseLat + medLat + vowLat + finLat;
+            });
+        }
+
+        function updateConversion() {
+            const val = input.value;
+            if (isLatinToSyanda) {
+                output.textContent = latinToSyanda(val);
+            } else {
+                output.textContent = syandaToLatin(val);
+            }
+        }
+
+        // Fungsi Salin Menggunakan execCommand (Fallback iFrame Aman)
+        function copyText(text, message) {
+            if (!text) return;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showNotification(message);
+            } catch (err) {
+                console.error('Gagal menyalin', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        input.addEventListener('input', updateConversion);
+
+        btnSwitch.addEventListener('click', () => {
+            isLatinToSyanda = !isLatinToSyanda;
+            
+            const currentInput = input.value;
+            const currentOutput = output.textContent;
+
+            if (isLatinToSyanda) {
+                switchLabel.innerText = "Mode: Latin → Syanda";
+                inputLabel.innerText = "Input: Latin";
+                outputLabel.innerText = "Hasil: Syanda";
+                input.placeholder = "Ketik teks Latin...";
+                input.classList.remove('syanda-text');
+                output.classList.add('syanda-text');
+            } else {
+                switchLabel.innerText = "Mode: Syanda → Latin";
+                inputLabel.innerText = "Input: Syanda";
+                outputLabel.innerText = "Hasil: Latin";
+                input.placeholder = "Tempel aksara Syanda...";
+                input.classList.add('syanda-text');
+                output.classList.remove('syanda-text');
+            }
+
+            input.value = currentOutput;
+            updateConversion();
+        });
+
+        function showNotification(msg) {
+            notifMsg.innerText = msg;
+            notif.classList.add('show');
+            setTimeout(() => notif.classList.remove('show'), 2000);
+        }
+
+        btnCopyOutput.addEventListener('click', () => {
+            copyText(output.textContent, "Aksara Berhasil Disalin");
+        });
+
+        btnCopyInput.addEventListener('click', () => {
+            copyText(input.value, "Input Berhasil Disalin");
+        });
+
+        btnClear.addEventListener('click', () => {
+            input.value = "";
+            output.textContent = "";
+            input.focus();
+        });
+
+        btnInfo.addEventListener('click', () => { infoModal.classList.remove('hidden'); infoModal.classList.add('flex'); });
+        btnCloseModal.addEventListener('click', () => { infoModal.classList.add('hidden'); infoModal.classList.remove('flex'); });
+        window.addEventListener('click', (e) => { if (e.target === infoModal) btnCloseModal.click(); });
+    </script>
+</body>
+</html>
