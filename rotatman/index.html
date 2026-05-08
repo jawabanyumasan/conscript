@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotatman Conscript Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        /* RTL & Bidi Override: 
+           Memastikan karakter pertama muncul di paling kanan 
+           secara visual di dalam browser.
+        */
+        .rotatman-font {
+            direction: rtl !important;
+            unicode-bidi: bidi-override !important;
+            text-align: right !important;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Animasi Notifikasi */
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 text-center relative">
+            <h1 class="text-4xl font-bold tracking-tight text-indigo-600 mb-2">Rotatman Conscript</h1>
+            <p class="text-slate-500 italic">Penerjemah Aksara Terbalik & Terputar</p>
+        </header>
+
+        <!-- Switch Mode Button -->
+        <div class="flex justify-center mb-6">
+            <button onclick="toggleMode()" class="group flex items-center gap-3 bg-white border-2 border-indigo-100 px-6 py-2 rounded-full shadow-sm hover:shadow-md hover:border-indigo-300 transition-all active:scale-95">
+                <span id="modeLabelLeft" class="text-sm font-bold text-indigo-600">Latin</span>
+                <div class="p-2 bg-indigo-50 rounded-full group-hover:rotate-180 transition-transform duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="m7 21-4-4 4-4"/><path d="M3 17h18"/><path d="m17 3 4 4-4 4"/><path d="M21 7H3"/></svg>
+                </div>
+                <span id="modeLabelRight" class="text-sm font-bold text-slate-400">Rotatman</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Input Section -->
+            <div class="flex flex-col space-y-4">
+                <div class="flex justify-between items-center">
+                    <label id="inputLabel" class="text-sm font-semibold uppercase tracking-wider text-slate-500">Latin Input</label>
+                    <div class="space-x-2">
+                        <button onclick="clearText()" class="text-xs px-3 py-1 bg-slate-200 hover:bg-slate-300 transition rounded-full text-slate-700">Bersihkan</button>
+                    </div>
+                </div>
+                <textarea id="mainInput" 
+                    placeholder="Ketik teks di sini..." 
+                    class="w-full h-64 p-4 rounded-2xl border-2 border-slate-200 focus:border-indigo-400 focus:ring-0 transition resize-none bg-white shadow-sm"
+                    oninput="processConversion()"></textarea>
+                <button onclick="copyText('mainInput', 'Input Berhasil Disalin')" class="w-full py-3 bg-white border border-slate-200 hover:bg-slate-50 transition rounded-xl flex items-center justify-center gap-2 text-sm font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Salin Input
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div class="flex flex-col space-y-4">
+                <div class="flex justify-between items-center">
+                    <label id="resultLabel" class="text-sm font-semibold uppercase tracking-wider text-slate-500">Rotatman Result (BTT Order)</label>
+                    <button onclick="toggleGuide()" class="text-xs px-3 py-1 bg-indigo-100 hover:bg-indigo-200 transition rounded-full text-indigo-700 font-bold underline decoration-indigo-300">Panduan</button>
+                </div>
+                
+                <div id="outputDisplay" class="w-full h-64 p-4 rounded-2xl border-2 border-indigo-100 bg-white shadow-sm overflow-y-auto">
+                    <!-- flex-col-reverse untuk urutan paragraf Bottom-to-Top -->
+                    <div id="outputContent" class="flex flex-col-reverse text-2xl leading-relaxed whitespace-pre-wrap"></div>
+                </div>
+
+                <button onclick="copyResult()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white transition rounded-xl flex items-center justify-center gap-2 text-sm font-medium shadow-lg shadow-indigo-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Salin Hasil
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer / Info -->
+        <footer class="mt-12 text-center text-slate-400 text-xs">
+            <p>&copy; 2024 Rotatman Script • RTL Layout & Bottom-to-Top Order</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl z-50 animate-slide-in">
+        <span id="toastMsg">Aksara Berhasil Disalin</span>
+    </div>
+
+    <!-- Info Modal / Guide -->
+    <div id="guideModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Panduan Rotatman</h2>
+                    <button onclick="toggleGuide()" class="p-2 hover:bg-slate-100 rounded-full transition">&times;</button>
+                </div>
+                <div class="space-y-4 text-slate-600 leading-relaxed">
+                    <p><strong>Aksara Rotatman</strong> adalah sistem penulisan unik di mana teks dibaca secara RTL (Right to Left).</p>
+                    <ul class="list-disc ml-5 space-y-2">
+                        <li><strong>Rata Kanan:</strong> Ketika disalin, teks akan secara otomatis menyertakan tanda Unicode RTL agar tetap rata kanan di aplikasi lain.</li>
+                        <li><strong>Normalisasi:</strong> Karakter beraksen seperti <code class="bg-slate-100 px-1">é</code> atau <code class="bg-slate-100 px-1">è</code> dianggap sebagai <code class="bg-slate-100 px-1">e</code> (ə).</li>
+                        <li><strong>Bottom-to-Top (BTT):</strong> Paragraf paling bawah adalah paragraf pertama yang Anda ketik.</li>
+                    </ul>
+                </div>
+                <button onclick="toggleGuide()" class="mt-8 w-full py-3 bg-slate-900 text-white rounded-xl font-bold">Tutup Panduan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mapping = {
+            'a': 'ɐ', 'b': 'q', 'c': 'ɔ', 'd': 'p', 'e': 'ə', 'f': 'ɟ', 'g': 'ɓ', 'h': 'ɥ', 'i': 'ᴉ', 
+            'j': 'ſ̣', 'k': 'ʞ', 'l': 'ꞁ', 'm': 'ɯ', 'n': 'u', 'o': 'o', 'p': 'd', 'q': 'b', 'r': 'ɹ', 
+            's': 's', 't': 'ʇ', 'u': 'n', 'v': 'ʌ', 'w': 'ʍ', 'x': 'x', 'y': 'ʎ', 'z': 'z',
+            'A': 'Ɐ', 'B': 'ꓭ', 'C': 'ꓛ', 'D': 'ꓷ', 'E': 'ꓱ', 'F': 'ꓞ', 'G': 'ꓨ', 'H': 'H', 'I': 'I', 
+            'J': 'ꓩ', 'K': 'ꓘ', 'L': 'ꓶ', 'M': 'ꟽ', 'N': 'N', 'O': 'O', 'P': 'Ԁ', 'Q': '℺', 'R': 'ꓤ', 
+            'S': 'S', 'T': 'Ʇ', 'U': 'Ո', 'V': 'Ʌ', 'W': 'M', 'X': 'X', 'Y': '⅄', 'Z': 'Z',
+            ',': '‘', '?': '¿', '!': '¡', ' ': ' '
+        };
+
+        const inverseMapping = {};
+        for (let key in mapping) {
+            inverseMapping[mapping[key]] = key;
+        }
+
+        let isLatinToRotatman = true;
+
+        function toggleMode() {
+            isLatinToRotatman = !isLatinToRotatman;
+            
+            const leftLabel = document.getElementById('modeLabelLeft');
+            const rightLabel = document.getElementById('modeLabelRight');
+            const inputLabel = document.getElementById('inputLabel');
+            const resultLabel = document.getElementById('resultLabel');
+
+            if (isLatinToRotatman) {
+                leftLabel.innerText = "Latin";
+                leftLabel.classList.replace('text-slate-400', 'text-indigo-600');
+                rightLabel.innerText = "Rotatman";
+                rightLabel.classList.replace('text-indigo-600', 'text-slate-400');
+                inputLabel.innerText = "Latin Input";
+                resultLabel.innerText = "Rotatman Result (BTT Order)";
+            } else {
+                leftLabel.innerText = "Rotatman";
+                leftLabel.classList.replace('text-slate-400', 'text-indigo-600');
+                rightLabel.innerText = "Latin";
+                rightLabel.classList.replace('text-indigo-600', 'text-slate-400');
+                inputLabel.innerText = "Rotatman Input";
+                resultLabel.innerText = "Latin Result (BTT Order)";
+            }
+
+            processConversion();
+        }
+
+        function processConversion() {
+            let input = document.getElementById('mainInput').value;
+            const outputElement = document.getElementById('outputContent');
+            const currentMap = isLatinToRotatman ? mapping : inverseMapping;
+            
+            if (isLatinToRotatman) {
+                // Normalisasi é/è ke e
+                input = input.replace(/[éè]/g, 'e').replace(/[ÉÈ]/g, 'E');
+            }
+
+            const paragraphs = input.split('\n');
+            const resultParagraphs = paragraphs.map(p => {
+                // Konversi karakter berdasarkan peta
+                return p.split('').map(char => currentMap[char] || char).join('');
+            });
+
+            outputElement.innerHTML = '';
+            resultParagraphs.forEach(text => {
+                const pTag = document.createElement('div');
+                if (isLatinToRotatman) {
+                    pTag.classList.add('rotatman-font');
+                    pTag.textContent = text || '\u00A0';
+                } else {
+                    pTag.style.direction = 'ltr';
+                    pTag.style.textAlign = 'left';
+                    // Jika memproses Rotatman kembali ke Latin, kita balik urutannya agar terbaca normal
+                    pTag.textContent = text.split('').reverse().join('') || '\u00A0';
+                }
+                outputElement.appendChild(pTag);
+            });
+        }
+
+        function clearText() {
+            document.getElementById('mainInput').value = '';
+            document.getElementById('outputContent').innerHTML = '';
+            document.getElementById('mainInput').focus();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
+
+        function copyText(id, msg) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand('copy');
+            showToast(msg);
+        }
+
+        function copyResult() {
+            const divs = document.querySelectorAll('#outputContent div');
+            
+            // Logika Penyalinan "Pintar":
+            // Menambahkan Right-to-Left Mark (\u200F) di setiap baris 
+            // agar aplikasi eksternal (WA/Medsos) meratakan teks ke kanan.
+            const textArray = Array.from(divs).map(div => {
+                let txt = div.textContent;
+                if (isLatinToRotatman && txt.trim() !== "") {
+                    // Balik urutan karakter untuk clipboard + tambahkan RLM di awal
+                    return '\u200F' + txt.split('').reverse().join('');
+                }
+                return txt;
+            });
+            
+            const fullText = textArray.join('\n');
+            
+            const tempArea = document.createElement('textarea');
+            tempArea.value = fullText;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+            
+            showToast("Aksara Berhasil Disalin (RTL Mode)");
+        }
+
+        function toggleGuide() {
+            const modal = document.getElementById('guideModal');
+            modal.classList.toggle('hidden');
+        }
+
+        window.onload = () => {
+            document.getElementById('mainInput').focus();
+        };
+    </script>
+</body>
+</html>
