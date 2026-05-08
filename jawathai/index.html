@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aksara Jawathai Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Noto+Sans+Thai&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .aksara-font {
+            font-family: 'Noto Sans Javanese', 'Noto Sans Thai', serif;
+            /* Line height besar untuk mencegah pemotongan diakritik atas/bawah */
+            line-height: 2.8; 
+            text-rendering: optimizeLegibility;
+            display: block;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .toast-animation {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Memberikan margin ekstra agar simbol di baris pertama tidak terpotong container */
+        #mainOutput {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-6 px-4 sm:px-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-indigo-950 mb-2 aksara-font">ꦄꦏꦱꦿꦗꦮꦛꦻ</h1>
+            <p class="text-indigo-600 font-semibold tracking-wide uppercase text-xs">Aksara Jawa Utama • Diakritik Thai</p>
+        </header>
+
+        <!-- Control Bar -->
+        <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+            <button id="toggleMode" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl shadow-lg transition-all flex items-center gap-3 font-bold">
+                <span id="modeLabel1">Latin</span>
+                <svg id="swapIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                <span id="modeLabel2">Aksara</span>
+            </button>
+
+            <div class="flex gap-2">
+                <button id="infoBtn" class="p-3 bg-white border border-slate-200 text-slate-600 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
+                <button id="clearBtn" class="p-3 bg-white border border-slate-200 text-red-500 rounded-2xl hover:bg-red-50 transition-all shadow-sm" title="Bersihkan">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Editor Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Input Area -->
+            <div class="glass-card rounded-[2rem] p-6 shadow-xl border-2 border-transparent focus-within:border-indigo-200 transition-all">
+                <label id="inputTitle" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Input Teks</label>
+                <textarea id="mainInput" 
+                    class="w-full h-48 sm:h-64 bg-transparent text-2xl outline-none resize-none placeholder:text-slate-300 font-medium"
+                    placeholder="Ketik di sini..."></textarea>
+            </div>
+
+            <!-- Output Area -->
+            <div class="glass-card rounded-[2rem] p-6 shadow-xl border-2 border-indigo-50 relative overflow-hidden">
+                <label id="outputTitle" class="block text-[10px] font-black text-indigo-300 uppercase tracking-[0.2em] mb-4">Hasil Transliterasi</label>
+                <!-- Ukuran font disetel ke text-4xl dan overflow diatur agar tidak memotong simbol -->
+                <div id="mainOutput" 
+                    class="aksara-font w-full h-48 sm:h-64 text-4xl text-indigo-950 break-words overflow-y-auto pr-2 px-2"
+                    style="scrollbar-width: thin;"></div>
+                
+                <button id="copyBtn" class="absolute bottom-6 right-6 bg-indigo-900 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-black transition-all flex items-center gap-2 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    SALIN
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-2xl opacity-0 translate-y-10 pointer-events-none toast-animation z-50 flex items-center gap-3 font-bold">
+            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs">✓</div>
+            Aksara Berhasil Disalin
+        </div>
+
+        <!-- Guide Modal -->
+        <div id="guideModal" class="fixed inset-0 bg-slate-950/60 hidden items-center justify-center p-4 z-50 backdrop-blur-md">
+            <div class="bg-white rounded-[2.5rem] max-w-2xl w-full max-h-[85vh] overflow-y-auto p-8 sm:p-12 relative shadow-2xl">
+                <button id="closeGuide" class="absolute top-8 right-8 text-slate-300 hover:text-slate-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <h3 class="text-3xl font-black text-indigo-950 mb-8 border-b pb-4">Panduan Jawathai</h3>
+                
+                <div class="space-y-10 text-slate-700">
+                    <!-- Vokal -->
+                    <section>
+                        <h4 class="font-black text-indigo-600 uppercase tracking-widest text-[10px] mb-6">Vokal Mandiri vs Sandhangan</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="bg-slate-50 p-5 rounded-3xl border border-slate-100">
+                                <p class="text-xs font-bold text-slate-400 mb-3">Mandiri (Awal/Setelah Vokal)</p>
+                                <div class="flex flex-wrap gap-2 aksara-font text-2xl">
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-slate-100">ꦄ a</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-slate-100">ꦆ i</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-slate-100">ꦈ u</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-slate-100">ꦌ e</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-slate-100">ꦎ o</span>
+                                </div>
+                            </div>
+                            <div class="bg-indigo-50/50 p-5 rounded-3xl border border-indigo-100">
+                                <p class="text-xs font-bold text-indigo-400 mb-3">Sandhangan Thai (Diakritik)</p>
+                                <div class="flex flex-wrap gap-2 aksara-font text-2xl">
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-indigo-100">ꦏิ i</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-indigo-100">ꦏุ u</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-indigo-100">เꦏ e</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-indigo-100">เะꦏ é</span>
+                                    <span class="bg-white px-3 py-1 rounded-xl shadow-sm border border-indigo-100">ใꦏ o</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Diftong -->
+                    <section>
+                        <h4 class="font-black text-indigo-600 uppercase tracking-widest text-[10px] mb-4">Diftong & Akhiran</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
+                            <div class="p-4 border rounded-2xl">
+                                <span class="text-xs block mb-1">tai (ai)</span>
+                                <span class="aksara-font text-3xl">ไꦠ</span>
+                            </div>
+                            <div class="p-4 border rounded-2xl">
+                                <span class="text-xs block mb-1">kau (au)</span>
+                                <span class="aksara-font text-3xl">เꦏา</span>
+                            </div>
+                            <div class="p-4 border rounded-2xl">
+                                <span class="text-xs block mb-1">kang (ng mati)</span>
+                                <span class="aksara-font text-3xl">ꦏํ</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Contoh Kasus -->
+                    <section class="bg-slate-900 text-white p-8 rounded-[2rem]">
+                        <h4 class="font-bold text-indigo-400 mb-4">Contoh Kasus:</h4>
+                        <ul class="space-y-4 text-sm font-medium">
+                            <li class="flex justify-between items-center border-b border-slate-700 pb-2">
+                                <span>Bangkok (ng mati di tengah)</span>
+                                <span class="aksara-font text-2xl text-indigo-300">ꦧํใꦏꦏฺ</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-slate-700 pb-2">
+                                <span>Tengah (te-ngah)</span>
+                                <span class="aksara-font text-2xl text-indigo-300">เꦠꦔะ</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Nang (na + ng mati)</span>
+                                <span class="aksara-font text-2xl text-indigo-300">ꦤํ</span>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mainInput = document.getElementById('mainInput');
+        const mainOutput = document.getElementById('mainOutput');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const infoBtn = document.getElementById('infoBtn');
+        const toggleMode = document.getElementById('toggleMode');
+        const swapIcon = document.getElementById('swapIcon');
+        const guideModal = document.getElementById('guideModal');
+        const closeGuide = document.getElementById('closeGuide');
+        const toast = document.getElementById('toast');
+
+        let isLatinToAksara = true;
+
+        const independentVowels = {
+            'a': 'ꦄ', 'i': 'ꦆ', 'u': 'ꦈ', 'e': 'ꦌ', 'é': 'ꦌ', 'o': 'ꦎ'
+        };
+
+        const consonants = {
+            'th': 'ꦛ', 'dh': 'ꦝ', 'ng': 'ꦔ', 'ny': 'ꦚ',
+            'h': 'ꦲ', 'n': 'ꦤ', 'c': 'ꦕ', 'r': 'ꦫ', 'k': 'ꦏ',
+            'd': 'ꦢ', 't': 'ꦠ', 's': 'ꦱ', 'w': 'ꦮ', 'l': 'ꦭ',
+            'p': 'ꦥ', 'j': 'ꦗ', 'y': 'ꦪ', 'm': 'ꦩ', 'g': 'ꦒ', 'b': 'ꦧ',
+            'f': 'ꦥ꦳', 'v': 'ꦥ꦳', 'z': 'ꦗ꦳', 'kh': 'ꦏ꦳', 'sy': 'ꦱ꦳'
+        };
+
+        const medials = { 'r': 'ꦿ', 'y': 'ꦽ' };
+
+        function transliterate(text) {
+            if (!text) return "";
+            let result = "";
+            let i = 0;
+            const lowerText = text.toLowerCase();
+
+            while (i < lowerText.length) {
+                const char = lowerText[i];
+                const prevChar = i > 0 ? lowerText[i-1] : " ";
+                const isWordStart = prevChar === " " || prevChar === "\n" || prevChar === "\t";
+                const isAfterVowel = "aeioué".includes(prevChar);
+
+                if ((isWordStart || isAfterVowel) && "aeioué".includes(char)) {
+                    if (lowerText.startsWith('au', i)) { result += "ꦄเา"; i += 2; }
+                    else if (lowerText.startsWith('ai', i)) { result += "ꦄไ"; i += 2; }
+                    else {
+                        result += independentVowels[char];
+                        i++;
+                    }
+                    continue;
+                }
+
+                let foundCons = "";
+                if (lowerText.startsWith('kh', i)) foundCons = 'kh';
+                else if (lowerText.startsWith('sy', i)) foundCons = 'sy';
+                else if (lowerText.startsWith('th', i)) foundCons = 'th';
+                else if (lowerText.startsWith('dh', i)) foundCons = 'dh';
+                else if (lowerText.startsWith('ng', i)) foundCons = 'ng';
+                else if (lowerText.startsWith('ny', i)) foundCons = 'ny';
+                else if (consonants[char]) foundCons = char;
+
+                if (foundCons) {
+                    i += foundCons.length;
+                    let baseChar = consonants[foundCons];
+                    let hasMedialChar = "";
+                    
+                    if ((lowerText[i] === 'r' || lowerText[i] === 'y') && "aeioué".includes(lowerText[i+1] || "")) {
+                        hasMedialChar = medials[lowerText[i]];
+                        i++;
+                    }
+
+                    let vokal = "";
+                    if (lowerText.startsWith('au', i)) { vokal = 'au'; i += 2; }
+                    else if (lowerText.startsWith('ai', i)) { vokal = 'ai'; i += 2; }
+                    else if (lowerText[i] === 'é') { vokal = 'é'; i++; }
+                    else if ("aeiou".includes(lowerText[i])) { vokal = lowerText[i]; i++; }
+
+                    switch(vokal) {
+                        case 'i': result += baseChar + (hasMedialChar || "") + "ิ"; break;
+                        case 'u': result += baseChar + (hasMedialChar || "") + "ุ"; break;
+                        case 'e': result += "เ" + baseChar + (hasMedialChar || ""); break;
+                        case 'é': result += "เะ" + baseChar + (hasMedialChar || ""); break;
+                        case 'o': result += "ใ" + baseChar + (hasMedialChar || ""); break;
+                        case 'ai': result += "ไ" + baseChar + (hasMedialChar || ""); break;
+                        case 'au': result += "เ" + baseChar + (hasMedialChar || "") + "า"; break;
+                        case 'a': result += baseChar + (hasMedialChar || ""); break;
+                        case '': 
+                            if (foundCons === 'ng') {
+                                result += "ํ";
+                            } else if (foundCons === 'h') {
+                                result += "ะ";
+                            } else {
+                                result += baseChar + (hasMedialChar || "") + "ฺ";
+                            }
+                            break;
+                    }
+                } else if (/\s/.test(char)) {
+                    result += char;
+                    i++;
+                } else {
+                    result += char;
+                    i++;
+                }
+            }
+            return result;
+        }
+
+        function reverseTransliterate(text) {
+            const revCons = Object.fromEntries(Object.entries(consonants).map(([k, v]) => [v, k]));
+            const revInd = Object.fromEntries(Object.entries(independentVowels).map(([k, v]) => [v, k]));
+            
+            let res = text;
+            res = res.replace(/เะ(ꦄ|ꦆ|ꦈ|ꦌ|ꦎ|ꦲ|ꦤ|ꦕ|ꦫ|ꦏ|ꦢ|ꦠ|ꦱ|ꦮ|ꦭ|ꦥ|ꦗ|ꦪ|ꦩ|ꦒ|ꦧ|ꦛ|ꦝ|ꦔ|ꦚ|ꦥ꦳|ꦗ꦳|ꦏ꦳|ꦱ꦳)/g, 'é$1');
+            res = res.replace(/เ(ꦄ|ꦆ|ꦈ|ꦌ|ꦎ|ꦲ|ꦤ|ꦕ|ꦫ|ꦏ|ꦢ|ꦠ|ꦱ|ꦮ|ꦭ|ꦥ|ꦗ|ꦪ|ꦩ|ꦒ|ꦧ|ꦛ|ꦝ|ꦔ|ꦚ|ꦥ꦳|ꦗ꦳|ꦏ꦳|ꦱ꦳)า/g, '$1au');
+            res = res.replace(/เ(ꦄ|ꦆ|ꦈ|ꦌ|ꦎ|ꦲ|ꦤ|ꦕ|ꦫ|ꦏ|ꦢ|ꦠ|ꦱ|ꦮ|ꦭ|ꦥ|ꦗ|ꦪ|ꦩ|ꦒ|ꦧ|ꦛ|ꦝ|ꦔ|ꦚ|ꦥ꦳|ꦗ꦳|ꦏ꦳|ꦱ꦳)/g, 'e$1');
+            res = res.replace(/ใ(ꦄ|ꦆ|ꦈ|ꦌ|ꦎ|ꦲ|ꦤ|ꦕ|ꦫ|ꦏ|ꦢ|ꦠ|ꦱ|ꦮ|ꦭ|ꦥ|ꦗ|ꦪ|ꦩ|ꦒ|ꦧ|ꦛ|ꦝ|ꦔ|ꦚ|ꦥ꦳|ꦗ꦳|ꦏ꦳|ꦱ꦳)/g, 'o$1');
+            res = res.replace(/ไ(ꦄ|ꦆ|ꦈ|ꦌ|ꦎ|ꦲ|ꦤ|ꦕ|ꦫ|ꦏ|ꦢ|ꦠ|ꦱ|ꦮ|ꦭ|ꦥ|ꦗ|ꦪ|ꦩ|ꦒ|ꦧ|ꦛ|ꦝ|ꦔ|ꦚ|ꦥ꦳|ꦗ꦳|ꦏ꦳|ꦱ꦳)/g, 'ai$1');
+            
+            res = res.split('ิ').join('i');
+            res = res.split('ุ').join('u');
+            res = res.split('ํ').join('ng');
+            res = res.split('ะ').join('h');
+            res = res.split('ฺ').join('');
+            res = res.split('ꦿ').join('r');
+            res = res.split('ꦽ').join('y');
+            
+            let output = "";
+            for (let char of res) {
+                if (revInd[char]) output += revInd[char];
+                else if (revCons[char]) output += revCons[char];
+                else output += char;
+            }
+            return output;
+        }
+
+        function update() {
+            const val = mainInput.value;
+            mainOutput.textContent = isLatinToAksara ? transliterate(val) : reverseTransliterate(val);
+        }
+
+        mainInput.addEventListener('input', update);
+
+        toggleMode.addEventListener('click', () => {
+            isLatinToAksara = !isLatinToAksara;
+            swapIcon.classList.toggle('rotate-180');
+            document.getElementById('modeLabel1').textContent = isLatinToAksara ? "Latin" : "Aksara";
+            document.getElementById('modeLabel2').textContent = isLatinToAksara ? "Aksara" : "Latin";
+            document.getElementById('inputTitle').textContent = isLatinToAksara ? "Input Latin" : "Input Aksara";
+            document.getElementById('outputTitle').textContent = isLatinToAksara ? "Hasil Aksara" : "Hasil Latin";
+            mainInput.value = mainOutput.textContent;
+            update();
+        });
+
+        clearBtn.addEventListener('click', () => {
+            mainInput.value = "";
+            mainOutput.textContent = "";
+            mainInput.focus();
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const text = mainOutput.textContent;
+            if (!text) return;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            toast.style.opacity = "1";
+            toast.style.transform = "translateX(-50%) translateY(0)";
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transform = "translateX(-50%) translateY(10px)";
+            }, 2000);
+        });
+
+        infoBtn.addEventListener('click', () => guideModal.classList.remove('hidden'));
+        closeGuide.addEventListener('click', () => guideModal.classList.add('hidden'));
+        window.onclick = (e) => e.target == guideModal && closeGuide.click();
+    </script>
+</body>
+</html>
