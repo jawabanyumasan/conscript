@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jirolu Javanese Conscript Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .aksara-font {
+            font-family: 'Noto Sans Javanese', serif;
+            line-height: 1.8;
+            white-space: pre-wrap; /* Mendukung banyak paragraf */
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 200px;
+            text-align: center;
+            border-radius: 12px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 40px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+        }
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+        .btn-action {
+            transition: all 0.2s;
+        }
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex flex-col items-center">
+
+    <div class="w-full max-w-4xl flex-grow">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <div class="inline-block p-2 bg-blue-600 rounded-2xl mb-4 shadow-lg shadow-blue-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c1.382 4.14 3.73 7.842 6.749 10.352" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-extrabold text-slate-800 mb-0.5">Jirolu Javanese Conscript</h1>
+            <p class="text-blue-600 font-semibold text-sm tracking-wide uppercase">Created By Wahyudi</p>
+            <p class="text-slate-500 text-xs mt-1">Sistem Aksara Jawa Berbasis Angka</p>
+        </header>
+
+        <!-- Converter Container -->
+        <div class="bg-white rounded-3xl shadow-2xl shadow-slate-200 overflow-hidden border border-slate-100">
+            
+            <!-- Labels & Mode Switch -->
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span id="label-input" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Latin</span>
+                    <button id="btn-switch" title="Tukar Mode" class="p-2 bg-white border border-slate-200 rounded-full shadow-sm hover:border-blue-400 hover:text-blue-600 transition-colors">
+                        <svg id="icon-switch" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rotate-0 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </button>
+                    <span id="label-output" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Aksara</span>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-clear" class="text-xs font-bold text-red-600 bg-red-50 px-4 py-1.5 rounded-lg hover:bg-red-100 transition-colors">Bersihkan</button>
+                </div>
+            </div>
+
+            <!-- Editor Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                <!-- Input Panel -->
+                <div class="p-6 relative">
+                    <textarea id="input-text" 
+                        class="w-full h-64 md:h-80 text-lg bg-transparent border-none focus:ring-0 outline-none resize-none custom-scrollbar text-slate-700 placeholder-slate-300"
+                        placeholder="Ketik banyak paragraf di sini..."></textarea>
+                    <button id="btn-copy-input" title="Salin Input" class="absolute bottom-4 right-4 p-2 text-slate-400 hover:text-blue-600 bg-white border border-slate-100 rounded-lg shadow-sm btn-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 012-2v-8a2 2 0 01-2-2h-8a2 2 0 01-2 2v8a2 2 0 012 2z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="p-6 bg-slate-50/30 relative">
+                    <div id="output-text" 
+                        class="aksara-font w-full h-64 md:h-80 text-2xl md:text-3xl text-slate-800 overflow-y-auto custom-scrollbar pt-2">
+                    </div>
+                    <button id="btn-copy-output" title="Salin Hasil" class="absolute bottom-4 right-4 p-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md btn-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 012-2v-8a2 2 0 01-2-2h-8a2 2 0 01-2 2v8a2 2 0 012 2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-4xl mt-12 mb-8 flex flex-col items-center gap-4">
+        <button id="btn-guide" class="flex items-center gap-2 px-6 py-2.5 bg-white border border-slate-200 rounded-full text-slate-600 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Buka Panduan Aksara
+        </button>
+        <div class="text-slate-400 text-xs font-medium tracking-widest uppercase">
+            Jirolu Conscript System &bull; 2024
+        </div>
+    </footer>
+
+    <!-- Modal Panduan -->
+    <div id="guide-modal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+                <h2 class="text-xl font-bold text-slate-800">Panduan Konversi Jirolu</h2>
+                <button id="btn-close-modal" class="text-slate-400 hover:text-slate-800 text-3xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-6">
+                <div>
+                    <h3 class="font-bold text-blue-600 mb-3 uppercase text-xs tracking-widest">Konsonan Utama</h3>
+                    <div class="grid grid-cols-3 md:grid-cols-5 gap-2 text-sm">
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Ha: ꧐꦳</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Na: ꧒</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Ca: ꦎ꦳</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Ra: ꦉ</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Ka/Q: ꧑꦳</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Da: ꦈ꦳</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Ta: ꦈ</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Sa: ꦄ</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">Wa: ꦎ</div>
+                        <div class="bg-slate-50 p-2 rounded-xl text-center">La: ꧗</div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-blue-600 mb-3 uppercase text-xs tracking-widest">Aturan Spesifik</h3>
+                    <ul class="space-y-2 text-sm text-slate-600 list-disc ml-4">
+                        <li><b>Pangkon:</b> Digunakan di akhir kata atau antar konsonan mati.</li>
+                        <li><b>Medial:</b> <i>Cakra</i> (ꦿ), <i>Cakra Keret</i> (ꦽ), dan <i>Pengkal</i> (ꦾ) otomatis terbentuk.</li>
+                        <li><b>Vokal:</b> Mendukung <i>é</i> (taling) dan <i>o</i> (taling tarung) setelah konsonan/kluster.</li>
+                        <li><b>Huruf Q:</b> Diproses sama dengan huruf K (꧑꦳).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="p-6 bg-slate-50">
+                <button id="btn-close-modal-ok" class="w-full py-3 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-900 shadow-lg shadow-slate-200 transition-all">Selesai</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast bg-slate-800 text-white py-3 px-6 shadow-xl flex items-center gap-3 border border-slate-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <span id="toast-message">Teks Berhasil Disalin</span>
+    </div>
+
+    <script>
+        // Transliteration Maps
+        const CONSONANTS = {
+            'ha': '꧐꦳', 'na': '꧒', 'ca': 'ꦎ꦳', 'ra': 'ꦉ', 'ka': '꧑꦳', 'qa': '꧑꦳',
+            'da': 'ꦈ꦳', 'ta': 'ꦈ', 'sa': 'ꦄ', 'wa': 'ꦎ', 'la': '꧗',
+            'pa': '꧘', 'dha': '꧔', 'ja': '꧖', 'ya': '꧙', 'nya': '꧓꦳',
+            'ma': '꧕', 'ga': '꧑', 'ba': 'ꦋ', 'tha': 'ꦅ', 'nga': '꧓',
+            'fa': '꧘꦳', 'va': '꧘꦳', 'za': '꧖꦳', 'kha': '꧑꦳꦳', 'sya': 'ꦄ꦳'
+        };
+
+        const VOWELS = {
+            'i': 'ꦶ', 'u': 'ꦸ', 'e': 'ꦼ', 'é': 'ꦺ', 'o': 'ꦺꦴ', 'a': ''
+        };
+
+        const FINALS = { 'ng': 'ꦁ', 'r': 'ꦂ', 'h': 'ꦃ' };
+        const MEDIALS = { 'y': 'ꦾ', 'r': 'ꦿ', 're': 'ꦽ' };
+        const PANGKON = '꧀';
+        const INDEP_A = '꧐';
+
+        let isLatinToAksara = true;
+
+        // Core Translation Logic (Latin to Aksara) with paragraph support
+        function latinToJirolu(text) {
+            if (!text) return "";
+            
+            const lines = text.toLowerCase().split('\n');
+            const translatedLines = lines.map(line => {
+                let words = line.split(' ');
+                let translatedWords = words.map(word => {
+                    if (!word) return "";
+                    let sy = "";
+                    let i = 0;
+                    
+                    while (i < word.length) {
+                        let char = word[i];
+                        
+                        // Independent vowel at word start
+                        if (i === 0 && /[aeioué]/.test(char)) {
+                            let v = INDEP_A + (VOWELS[char] || "");
+                            if (char === 'o') v = '꧐ꦺꦴ';
+                            sy += v;
+                            i++; continue;
+                        }
+
+                        // Determine Consonant Base
+                        let cKey = "";
+                        if (word.startsWith("nya", i)) { cKey = "nya"; i += 3; }
+                        else if (word.startsWith("nga", i)) { cKey = "nga"; i += 3; }
+                        else if (word.startsWith("ny", i)) { cKey = "nya"; i += 2; }
+                        else if (word.startsWith("ng", i) && !/[aeioué]/.test(word[i+2]||"")) { 
+                            sy += FINALS['ng']; i += 2; continue; 
+                        }
+                        else if (word.startsWith("ng", i)) { cKey = "nga"; i += 2; }
+                        else if (word.startsWith("th", i)) { cKey = "tha"; i += 2; }
+                        else if (word.startsWith("dh", i)) { cKey = "dha"; i += 2; }
+                        else if (word.startsWith("kh", i)) { cKey = "kha"; i += 2; }
+                        else if (word.startsWith("sy", i)) { cKey = "sya"; i += 2; }
+                        else if (/[b-df-hj-np-tv-z]/.test(char) || char === 'q') {
+                            cKey = (char === 'q' ? 'k' : char) + "a";
+                            if ((char === 'r' || char === 'h') && !/[aeioué]/.test(word[i+1]||"")) {
+                                sy += FINALS[char]; i++; continue;
+                            }
+                            if (char === 'q' && !/[aeioué]/.test(word[i+1]||"")) {
+                                sy += CONSONANTS['ka'] + PANGKON; i++; continue;
+                            }
+                            i++;
+                        } else if (/[aeioué]/.test(char)) {
+                            sy += INDEP_A + VOWELS[char]; i++; continue;
+                        } else {
+                            sy += char; i++; continue;
+                        }
+
+                        let base = CONSONANTS[cKey] || char;
+                        let medial = "";
+                        let vowel = "";
+                        
+                        // Medial Check
+                        let next = word[i] || "";
+                        if (next === 'r' && word[i+1] === 'e' && !/[aiuéo]/.test(word[i+1]||"")) {
+                            medial = MEDIALS['re']; i += 2;
+                        } else if (next === 'r' && /[aeioué]/.test(word[i+1] || "")) {
+                            medial = MEDIALS['r']; i++;
+                        } else if (next === 'y' && /[aeioué]/.test(word[i+1] || "")) {
+                            medial = MEDIALS['y']; i++;
+                        }
+
+                        // Vowel Check
+                        next = word[i] || "";
+                        if (/[aeioué]/.test(next)) {
+                            vowel = VOWELS[next];
+                            i++;
+                        } else {
+                            vowel = PANGKON;
+                        }
+                        
+                        sy += base + medial + vowel;
+                    }
+                    return sy;
+                });
+                return translatedWords.join(" ");
+            });
+
+            return translatedLines.join("\n");
+        }
+
+        // Reverse Logic (Aksara to Latin)
+        function jiroluToLatin(text) {
+            if (!text) return "";
+            
+            const revCons = Object.fromEntries(Object.entries(CONSONANTS).map(([k,v]) => [v, k.replace('a','')]));
+            const revVowels = Object.fromEntries(Object.entries(VOWELS).map(([k,v]) => [v, k]).filter(pair => pair[0] !== ''));
+            const revFinals = Object.fromEntries(Object.entries(FINALS).map(([k,v]) => [v, k]));
+            const revMedials = Object.fromEntries(Object.entries(MEDIALS).map(([k,v]) => [v, k]));
+
+            let output = "";
+            let i = 0;
+            while (i < text.length) {
+                let found = false;
+                let tri = text.substr(i, 3);
+                let duo = text.substr(i, 2);
+                let uni = text.substr(i, 1);
+
+                if (revCons[tri]) { output += revCons[tri] + 'a'; i += 3; found = true; }
+                else if (revCons[duo]) { output += revCons[duo] + 'a'; i += 2; found = true; }
+                else if (revCons[uni]) { 
+                    if (uni === INDEP_A) {
+                        let next = text[i+1] || "";
+                        if (revVowels[next]) { output += revVowels[next]; i += 2; }
+                        else { output += 'a'; i += 1; }
+                    } else {
+                        output += revCons[uni] + 'a'; i += 1; 
+                    }
+                    found = true; 
+                }
+
+                if (found) {
+                    let mod = text[i] || "";
+                    if (mod === PANGKON) {
+                        output = output.slice(0, -1); i++;
+                    } else if (revMedials[mod]) {
+                        output = output.slice(0, -1) + revMedials[mod];
+                        i++;
+                        let v = text[i] || "";
+                        if (revVowels[v]) { output += revVowels[v]; i++; } else { output += 'a'; }
+                    } else if (revVowels[mod]) {
+                        output = output.slice(0, -1) + revVowels[mod]; i++;
+                    } else if (revFinals[mod]) {
+                        output += revFinals[mod]; i++;
+                    }
+                } else {
+                    output += uni;
+                    i++;
+                }
+            }
+            return output;
+        }
+
+        // DOM Setup
+        const inputArea = document.getElementById('input-text');
+        const outputArea = document.getElementById('output-text');
+        const btnClear = document.getElementById('btn-clear');
+        const btnSwitch = document.getElementById('btn-switch');
+        const iconSwitch = document.getElementById('icon-switch');
+        const btnCopyInput = document.getElementById('btn-copy-input');
+        const btnCopyOutput = document.getElementById('btn-copy-output');
+        const btnGuide = document.getElementById('btn-guide');
+        const modal = document.getElementById('guide-modal');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+
+        function update() {
+            const val = inputArea.value;
+            outputArea.textContent = isLatinToAksara ? latinToJirolu(val) : jiroluToLatin(val);
+        }
+
+        inputArea.addEventListener('input', update);
+
+        btnSwitch.addEventListener('click', () => {
+            isLatinToAksara = !isLatinToAksara;
+            document.getElementById('label-input').textContent = isLatinToAksara ? "Latin" : "Aksara";
+            document.getElementById('label-output').textContent = isLatinToAksara ? "Aksara" : "Latin";
+            iconSwitch.style.transform = isLatinToAksara ? "rotate(0deg)" : "rotate(180deg)";
+            const currentOut = outputArea.textContent;
+            inputArea.value = currentOut;
+            update();
+            inputArea.focus();
+        });
+
+        btnClear.addEventListener('click', () => {
+            inputArea.value = "";
+            outputArea.textContent = "";
+            inputArea.focus();
+        });
+
+        const showToast = (msg) => {
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        };
+
+        const copyText = (txt, msg) => {
+            if (!txt) return;
+            const el = document.createElement('textarea');
+            el.value = txt;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast(msg);
+        };
+
+        btnCopyInput.addEventListener('click', () => copyText(inputArea.value, "Input Berhasil Disalin"));
+        btnCopyOutput.addEventListener('click', () => copyText(outputArea.textContent, "Aksara Berhasil Disalin"));
+
+        // Modal Logic
+        btnGuide.addEventListener('click', () => modal.classList.remove('hidden'));
+        const hideModal = () => modal.classList.add('hidden');
+        document.getElementById('btn-close-modal').onclick = hideModal;
+        document.getElementById('btn-close-modal-ok').onclick = hideModal;
+        window.onclick = (e) => { if (e.target === modal) hideModal(); };
+
+    </script>
+</body>
+</html>
