@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jawa STRES - Versi 2 Design By Wahyudi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .aksara-font {
+            font-family: 'Noto Sans Javanese', serif;
+            line-height: 2.2;
+        }
+        .notif {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translate(-50%, 100px);
+            opacity: 0;
+        }
+        .notif.show {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+        .mode-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        .mode-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 22px; width: 22px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #4f46e5; }
+        input:checked + .slider:before { transform: translateX(30px); }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-900">
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-5xl font-black text-indigo-700 mb-2 italic tracking-tighter">Jawa STRES</h1>
+            <p class="text-slate-700 font-bold text-xl">Versi 2 Design By Wahyudi</p>
+            <div class="flex items-center justify-center gap-2 mt-1">
+                <span class="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">Update 2024</span>
+                <p class="text-slate-400 text-sm italic underline decoration-indigo-200">Sistem Tulisan Rekaan Enggo Sandhangan</p>
+            </div>
+            
+            <div class="mt-8 flex flex-col items-center gap-4">
+                <div class="flex items-center gap-6 bg-white px-8 py-4 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
+                    <span id="modeTextLeft" class="text-sm font-bold text-indigo-600 transition-colors">LATIN</span>
+                    <label class="mode-switch">
+                        <input type="checkbox" id="modeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="modeTextRight" class="text-sm font-bold text-slate-400 transition-colors uppercase">Aksara</span>
+                </div>
+                <button onclick="toggleGuide()" class="group flex items-center gap-2 text-indigo-600 px-6 py-2 rounded-full text-xs font-bold hover:bg-indigo-50 transition-all uppercase tracking-widest border border-indigo-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Info & Panduan Bracket
+                </button>
+            </div>
+        </header>
+
+        <main class="grid gap-6">
+            <!-- Bagian Input -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 focus-within:ring-4 focus-within:ring-indigo-50 transition-all">
+                <div class="flex justify-between items-center mb-3">
+                    <label id="inputLabel" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Input Latin</label>
+                    <span class="text-[10px] text-slate-300 font-mono" id="charCount">0 Karakter</span>
+                </div>
+                <textarea 
+                    id="mainInput" 
+                    placeholder='Gunakan [] untuk nama atau [s[]] untuk Sansekerta...'
+                    class="w-full h-40 p-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:outline-none focus:bg-white resize-none text-xl transition-all placeholder:text-slate-300 font-medium"
+                ></textarea>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex flex-wrap justify-between items-center gap-4 px-2">
+                <button onclick="clearText()" class="text-slate-400 font-black hover:text-red-500 transition uppercase text-xs tracking-widest flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Reset
+                </button>
+                <div class="flex gap-3">
+                    <button onclick="copyInput()" class="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-2xl font-bold hover:bg-slate-50 transition active:scale-95 text-sm shadow-sm">
+                        Salin Input
+                    </button>
+                    <button onclick="copyText()" class="bg-indigo-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition active:scale-95 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        Salin Hasil
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bagian Hasil -->
+            <div class="bg-indigo-900/5 p-8 rounded-3xl border-2 border-dashed border-indigo-100 min-h-[200px] relative">
+                <label id="outputLabel" class="absolute -top-3 left-6 bg-white px-4 py-1 rounded-full text-[10px] font-black text-indigo-600 uppercase tracking-widest border border-indigo-50 shadow-sm">Hasil Aksara STRES</label>
+                <div 
+                    id="mainOutput" 
+                    class="aksara-font w-full text-4xl sm:text-5xl break-words leading-[2.5]"
+                ></div>
+            </div>
+        </main>
+        
+        <footer class="mt-12 text-center">
+            <p class="text-slate-300 text-[10px] font-bold uppercase tracking-widest">© 2024 Jawa STRES - Wahyudi Edition</p>
+        </footer>
+    </div>
+
+    <!-- Modal Panduan -->
+    <div id="guideModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2.5rem] flex flex-col shadow-2xl">
+            <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-indigo-50/30">
+                <div>
+                    <h2 class="text-3xl font-black text-indigo-700 tracking-tight">PANDUAN BRACKET</h2>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Aturan Penulisan Khusus v2.0</p>
+                </div>
+                <button onclick="toggleGuide()" class="bg-white text-slate-400 hover:text-red-500 w-10 h-10 rounded-full flex items-center justify-center shadow-sm border border-slate-100 transition-all">✕</button>
+            </div>
+            
+            <div class="p-8 overflow-y-auto custom-scrollbar space-y-8">
+                <!-- Aturan Dasar -->
+                <section>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">1</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-wider text-sm">Mode Nama & Gelar <span class="text-indigo-600">[]</span></h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 pl-11 text-sm">Menggunakan awalan <b>Pa ($ꦥ꧀$)</b> untuk setiap konsonan nglagena.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-11">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-[10px] block font-bold text-slate-400 mb-1 italic">[Banyumas]</span>
+                            <span class="aksara-font text-xl text-indigo-700">ꦥ꧀ꦧꦥ꧀ꦚꦸꦥ꧀ꦩꦥ꧀ꦱ꧀</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-[10px] block font-bold text-slate-400 mb-1 italic">[India]</span>
+                            <span class="aksara-font text-xl text-indigo-700">ꦆꦥ꧀ꦤ꧀ꦥ꧀ꦢꦶꦄ</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Aturan Sansekerta -->
+                <section>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">2</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-wider text-sm">Mode Sansekerta <span class="text-indigo-600">[s[]]</span></h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 pl-11 text-sm">Menggunakan awalan <b>Sa ($ꦱ꧀$)</b> untuk setiap konsonan nglagena.</p>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 ml-11">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-[10px] block font-bold text-slate-400 mb-1 italic">[s[agni]]</span>
+                                <span class="aksara-font text-xl text-indigo-700">ꦄꦱ꧀ꦒ꧀ꦱ꧀ꦤꦶ</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] block font-bold text-slate-400 mb-1 italic">[s[dharma]]</span>
+                                <span class="aksara-font text-xl text-indigo-700">ꦱ꧀ꦝꦂꦱ꧀ꦩ</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Aturan Singkatan -->
+                <section>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">3</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-wider text-sm">Singkatan & Gelar <span class="text-indigo-600">.</span></h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 pl-11 text-sm">Setiap titik di dalam bracket akan diubah menjadi tanda baca <b>Pada Lingsa ($꧈$)</b>.</p>
+                    <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 ml-11">
+                        <span class="text-[10px] block font-bold text-indigo-400 mb-1 italic">[B.C.A.]</span>
+                        <span class="aksara-font text-2xl text-indigo-800 tracking-widest">ꦥ꧀ꦧ꧈ ꦥ꧀ꦕ꧈ ꦄ꧈</span>
+                    </div>
+                </section>
+            </div>
+            
+            <div class="p-6 bg-slate-50">
+                <button onclick="toggleGuide()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 uppercase tracking-widest text-sm">Mengerti & Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifikasi -->
+    <div id="copyNotif" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-2xl font-bold notif z-50 text-sm tracking-wide">
+        Berhasil Disalin!
+    </div>
+
+    <script>
+        const mainInput = document.getElementById('mainInput');
+        const mainOutput = document.getElementById('mainOutput');
+        const modeToggle = document.getElementById('modeToggle');
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+        const modeTextLeft = document.getElementById('modeTextLeft');
+        const modeTextRight = document.getElementById('modeTextRight');
+        const guideModal = document.getElementById('guideModal');
+        const copyNotif = document.getElementById('copyNotif');
+        const charCount = document.getElementById('charCount');
+
+        let isAksaraToLatin = false;
+
+        const javaneseDigits = ['꧐', '꧑', '꧒', '꧓', '꧔', '꧕', '꧖', '꧗', '꧘', '꧙'];
+        
+        const independentVowels = { 
+            'a': 'ꦄ', 'i': 'ꦅ', 'u': 'ꦈ', 'e': 'ꦄꦼ', 'o': 'ꦎ', 'é': 'ꦌ',
+            'ai': 'ꦍ', 'au': 'ꦎꦴ' 
+        };
+
+        const consonantMap = {
+            'h': 'ꦲ', 'n': 'ꦤ', 'c': 'ꦕ', 'r': 'ꦫ', 'k': 'ꦏ',
+            'f': 'ꦥ꦳', 'v': 'ꦥ꦳', 'z': 'ꦗ꦳', 'kh': 'ꦑ꦳', 'sy': 'ꦱ꦳', 'q': 'ꦏ꦳',
+            'd': 'ꦢ', 't': 'ꦠ', 's': 'ꦱ', 'w': 'ꦮ', 'l': 'ꦭ',
+            'p': 'ꦥ', 'dh': 'ꦝ', 'j': 'ꦗ', 'y': 'ꦪ', 'ny': 'ꦘ',
+            'm': 'ꦩ', 'g': 'ꦒ', 'b': 'ꦧ', 'th': 'ꦛ', 'ng': 'ꦔ'
+        };
+
+        const sandhanganMap = { 
+            'i': 'ꦶ', 'u': 'ꦸ', 'e': 'ꦼ', 'o': 'ꦺꦴ', 'é': 'ꦺ', 
+            'ai': 'ꦻ', 'au': 'ꦻꦴ', 'dead': '꧀' 
+        };
+
+        const medialMap = { 'y': 'ꦾ', 'r': 'ꦿ', 're': 'ꦽ' };
+        const finalMap = { 'h': 'ꦃ', 'r': 'ꦂ', 'ng': 'ꦁ' };
+
+        function showNotif(msg) {
+            copyNotif.innerText = msg;
+            copyNotif.classList.add('show');
+            setTimeout(() => copyNotif.classList.remove('show'), 2000);
+        }
+
+        modeToggle.addEventListener('change', () => {
+            isAksaraToLatin = modeToggle.checked;
+            updateUI();
+            const inputVal = mainInput.value;
+            mainOutput.innerText = isAksaraToLatin ? "Aksara to Latin belum didukung untuk fitur bracket v2 ini." : transliterate(inputVal);
+        });
+
+        function updateUI() {
+            if (isAksaraToLatin) {
+                inputLabel.innerText = "Input Aksara STRES";
+                outputLabel.innerText = "Hasil Latin";
+                mainInput.className = "aksara-font w-full h-40 p-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:outline-none focus:bg-white resize-none text-3xl transition-all";
+                modeTextLeft.classList.replace('text-indigo-600', 'text-slate-400');
+                modeTextRight.classList.replace('text-slate-400', 'text-indigo-600');
+            } else {
+                inputLabel.innerText = "Input Latin";
+                outputLabel.innerText = "Hasil Aksara STRES";
+                mainInput.className = "w-full h-40 p-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:outline-none focus:bg-white resize-none text-xl transition-all";
+                modeTextLeft.classList.replace('text-slate-400', 'text-indigo-600');
+                modeTextRight.classList.replace('text-indigo-600', 'text-slate-400');
+            }
+        }
+
+        function clearText() {
+            mainInput.value = '';
+            mainOutput.innerText = '';
+            charCount.innerText = "0 Karakter";
+            mainInput.focus();
+        }
+
+        function toggleGuide() {
+            guideModal.classList.toggle('hidden');
+            guideModal.classList.toggle('flex');
+        }
+
+        function copyInput() {
+            const text = mainInput.value;
+            if (!text) return;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotif("Input Berhasil Disalin");
+        }
+
+        function copyText() {
+            const text = mainOutput.innerText;
+            if (!text) return;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotif("Aksara Berhasil Disalin");
+        }
+
+        function transliterate(text) {
+            if (!text) return "";
+            
+            // State management
+            let output = "";
+            let i = 0;
+            const vList = ['a','i','u','e','o','é','ai','au'];
+
+            while (i < text.length) {
+                let char = text[i];
+                
+                // 1. Check for Sanskrit Marker [s[...]]
+                if (text.startsWith("[s[", i)) {
+                    let endIdx = text.indexOf("]]", i + 3);
+                    if (endIdx !== -1) {
+                        let content = text.substring(i + 3, endIdx);
+                        output += processSTRES(content, "ꦱ꧀");
+                        i = endIdx + 2;
+                        continue;
+                    }
+                }
+
+                // 2. Check for Proper Name Marker [...]
+                if (char === '[') {
+                    let endIdx = text.indexOf("]", i + 1);
+                    if (endIdx !== -1) {
+                        let content = text.substring(i + 1, endIdx);
+                        output += processSTRES(content, "ꦥ꧀");
+                        i = endIdx + 1;
+                        continue;
+                    }
+                }
+
+                // 3. Punctuation / Default Space
+                if (/\s+/.test(char)) {
+                    output += char;
+                    i++;
+                    continue;
+                }
+
+                // 4. Default Mode (Ha Prefix)
+                // Tokenize one word or character and process
+                let nextSpace = text.indexOf(" ", i);
+                let nextBracket = text.indexOf("[", i);
+                let limit = Math.min(
+                    nextSpace === -1 ? text.length : nextSpace,
+                    nextBracket === -1 ? text.length : nextBracket
+                );
+                
+                let segment = text.substring(i, limit);
+                if (segment) {
+                    output += processSTRES(segment, "ꦲ꧀");
+                    i += segment.length;
+                } else {
+                    output += text[i];
+                    i++;
+                }
+            }
+
+            return output;
+        }
+
+        /**
+         * Core STRES processing for a text segment with a specific prefix
+         */
+        function processSTRES(text, prefix) {
+            let res = "";
+            // Replace digits
+            let segment = text.replace(/[0-9]/g, m => javaneseDigits[parseInt(m)]);
+            
+            // Replace dots with Pada Lingsa if inside a context where we handle it
+            // We'll treat dots as special tokens
+            const tokens = segment.match(/(ai|au|kh|sy|th|dh|ny|ng|É|[a-iuéo\.]|[bcdfghjklmnpqrstvwxyz])|([^a-zÉ0-9\.\s]+)|(\s+)/gi);
+            if (!tokens) return segment;
+
+            const vList = ['a','i','u','e','o','é','ai','au'];
+            let lastType = 'start';
+
+            for (let k = 0; k < tokens.length; k++) {
+                let t = tokens[k];
+                let tLower = t.toLowerCase();
+
+                // Handle dot as Pada Lingsa
+                if (t === '.') {
+                    res += "꧈";
+                    lastType = 'punct';
+                    continue;
+                }
+
+                if (/\s+/.test(t)) { res += t; lastType = 'space'; continue; }
+                if (/[^a-zÉ0-9\.\s]/i.test(t)) { res += t; lastType = 'punct'; continue; }
+
+                // Independent Vowels
+                if (vList.includes(tLower) || t === 'É') {
+                    if (lastType === 'start' || lastType === 'space' || lastType === 'punct' || vList.includes(tokens[k-1]?.toLowerCase()) || tokens[k-1] === 'É') {
+                        let vKey = (t === 'É') ? 'é' : tLower;
+                        res += independentVowels[vKey] || "";
+                        lastType = 'vowel';
+                        continue;
+                    }
+                }
+
+                // Consonants
+                if (consonantMap[tLower]) {
+                    let lookAhead = k + 1;
+                    let mainCons = consonantMap[tLower];
+                    let medialMark = ""; let vowelMark = ""; let finalMark = "";
+
+                    // Medial checks (y, r, re, w)
+                    if (tokens[lookAhead]) {
+                        let m = tokens[lookAhead].toLowerCase();
+                        if (m === 'y') { medialMark = medialMap['y']; k++; lookAhead++; }
+                        else if (m === 'r') {
+                            if (tokens[lookAhead+1] && tokens[lookAhead+1].toLowerCase() === 'e') {
+                                medialMark = medialMap['re']; k += 2; lookAhead += 2;
+                            } else { medialMark = medialMap['r']; k++; lookAhead++; }
+                        } else if (m === 'w') { mainCons += "꧀ꦮ"; k++; lookAhead++; }
+                    }
+
+                    // Vowel checks
+                    if (tokens[lookAhead]) {
+                        let v = tokens[lookAhead].toLowerCase();
+                        let vToken = tokens[lookAhead];
+                        if (vToken === 'É' || vList.includes(v)) {
+                            if (vToken === 'É' || v === 'é') vowelMark = sandhanganMap['é'];
+                            else if (v === 'ai') vowelMark = sandhanganMap['ai'];
+                            else if (v === 'au') vowelMark = sandhanganMap['au'];
+                            else if (v === 'i') vowelMark = sandhanganMap['i'];
+                            else if (v === 'u') vowelMark = sandhanganMap['u'];
+                            else if (v === 'e') vowelMark = sandhanganMap['e'];
+                            else if (v === 'o') vowelMark = sandhanganMap['o'];
+                            k++; lookAhead++;
+                            
+                            // Final checks (h, r, ng)
+                            if (tokens[lookAhead]) {
+                                let f = tokens[lookAhead].toLowerCase();
+                                let isNextVowel = tokens[lookAhead+1] && (vList.includes(tokens[lookAhead+1].toLowerCase()) || tokens[lookAhead+1] === 'É');
+                                if (!isNextVowel) {
+                                    if (f === 'h') finalMark = finalMap['h']; 
+                                    else if (f === 'r') finalMark = finalMap['r']; 
+                                    else if (f === 'ng') finalMark = finalMap['ng'];
+                                    if (finalMark) k++;
+                                }
+                            }
+                        } else { vowelMark = sandhanganMap['dead']; }
+                    } else { vowelMark = sandhanganMap['dead']; }
+
+                    res += prefix + mainCons + medialMark + vowelMark + finalMark;
+                    lastType = 'consonant';
+                }
+            }
+            return res;
+        }
+
+        mainInput.addEventListener('input', () => {
+            charCount.innerText = `${mainInput.value.length} Karakter`;
+            if (!isAksaraToLatin) {
+                mainOutput.innerText = transliterate(mainInput.value);
+            }
+        });
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
