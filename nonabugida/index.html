@@ -27,7 +27,7 @@
             transition: max-height 0.5s ease-out;
         }
         .guide-content.open {
-            max-height: 2500px;
+            max-height: 3000px;
         }
         #outputText::-webkit-scrollbar {
             width: 8px;
@@ -75,11 +75,12 @@
     <div class="max-w-4xl mx-auto px-4 py-8">
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-indigo-800 mb-2">Aksara Jawa Non-Abugida</h1>
-            <p class="text-slate-600">Sistem Alfabetis: Konsonan Mati & Sandhangan Pangkon</p>
+            <p class="text-slate-600">Sistem Alfabetis: Vokal Mandiri & Sandhangan Pangkon</p>
             <p class="text-indigo-500 font-medium mt-2 text-sm italic">Created By Wahyudi</p>
         </header>
 
         <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+            <!-- Controls -->
             <div class="flex flex-col md:flex-row items-center justify-between mb-6 gap-6">
                 <div class="flex items-center space-x-3 order-2 md:order-1">
                     <span id="labelFrom" class="font-semibold text-lg text-indigo-600">Latin</span>
@@ -103,10 +104,11 @@
                 </div>
             </div>
 
+            <!-- Input & Output -->
             <div class="space-y-6">
                 <div class="relative">
                     <label class="block text-sm font-medium text-slate-500 mb-1" id="inputLabel">Ketik Latin di sini:</label>
-                    <textarea id="inputText" class="w-full h-40 p-4 rounded-xl border border-slate-200 bg-slate-50 textarea-custom focus:outline-none focus:border-indigo-500" placeholder="Contoh: Fakta zakat..."></textarea>
+                    <textarea id="inputText" class="w-full h-40 p-4 rounded-xl border border-slate-200 bg-slate-50 textarea-custom focus:outline-none focus:border-indigo-500" placeholder="Contoh: Ora, fakta, zakat..."></textarea>
                     <button id="btnCopyInput" class="absolute bottom-4 right-4 bg-white/80 hover:bg-white p-2 rounded-lg shadow-sm border border-slate-200 text-slate-500 hover:text-indigo-600 flex items-center space-x-1 text-xs z-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
                         <span>Salin Input</span>
@@ -135,7 +137,7 @@
             <div id="guideContent" class="guide-content">
                 <div class="p-6 md:p-8 space-y-8 text-sm">
                     <section>
-                        <h3 class="font-bold text-indigo-700 border-b pb-2 mb-4">Vokal Mandiri</h3>
+                        <h3 class="font-bold text-indigo-700 border-b pb-2 mb-4">Vokal Mandiri (Alif)</h3>
                         <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
                             <div class="p-2 bg-slate-50 rounded text-center"><div class="aksara-font-sm mb-1">ꦄꦵ</div><div class="text-[10px] font-bold">A</div></div>
                             <div class="p-2 bg-slate-50 rounded text-center"><div class="aksara-font-sm mb-1">ꦄꦶ</div><div class="text-[10px] font-bold">I</div></div>
@@ -148,45 +150,56 @@
 
                     <section>
                         <h3 class="font-bold text-indigo-700 border-b pb-2 mb-4">Konsonan Utama</h3>
-                        <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦲ</div><div class="text-[9px]">H</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦤ</div><div class="text-[9px]">N</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦕ</div><div class="text-[9px]">C</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦫ</div><div class="text-[9px]">R</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦏ</div><div class="text-[9px]">K</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦢ</div><div class="text-[9px]">D</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦠ</div><div class="text-[9px]">T</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦱ</div><div class="text-[9px]">S</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦮ</div><div class="text-[9px]">W</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦭ</div><div class="text-[9px]">L</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦥ</div><div class="text-[9px]">P</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦝ</div><div class="text-[9px]">Dh</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦗ</div><div class="text-[9px]">J</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦪ</div><div class="text-[9px]">Y</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦚ</div><div class="text-[9px]">Ny</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦩ</div><div class="text-[9px]">M</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦒ</div><div class="text-[9px]">G</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦧ</div><div class="text-[9px]">B</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦛ</div><div class="text-[9px]">Th</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦔ</div><div class="text-[9px]">Ng</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦏ꦳</div><div class="text-[9px]">Kh/Q</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦱ꦳</div><div class="text-[9px]">Sy</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦥ꦳</div><div class="text-[9px]">F/V</div></div>
-                            <div class="text-center p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦗ꦳</div><div class="text-[9px]">Z</div></div>
+                        <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 text-center">
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦲ</div><div class="text-[9px]">H</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦤ</div><div class="text-[9px]">N</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦕ</div><div class="text-[9px]">C</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦫ</div><div class="text-[9px]">R</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦏ</div><div class="text-[9px]">K</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦢ</div><div class="text-[9px]">D</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦠ</div><div class="text-[9px]">T</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦱ</div><div class="text-[9px]">S</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦮ</div><div class="text-[9px]">W</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦭ</div><div class="text-[9px]">L</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦥ</div><div class="text-[9px]">P</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦝ</div><div class="text-[9px]">Dh</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦗ</div><div class="text-[9px]">J</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦪ</div><div class="text-[9px]">Y</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦚ</div><div class="text-[9px]">Ny</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦩ</div><div class="text-[9px]">M</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦒ</div><div class="text-[9px]">G</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦧ</div><div class="text-[9px]">B</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦛ</div><div class="text-[9px]">Th</div></div>
+                            <div class="p-2 border border-slate-100 rounded"><div class="aksara-font-sm">ꦔ</div><div class="text-[9px]">Ng</div></div>
+                            <div class="p-2 border border-slate-100 rounded bg-indigo-50"><div class="aksara-font-sm">ꦏ꦳</div><div class="text-[9px]">Kh/Q</div></div>
+                            <div class="p-2 border border-slate-100 rounded bg-indigo-50"><div class="aksara-font-sm">ꦱ꦳</div><div class="text-[9px]">Sy</div></div>
+                            <div class="p-2 border border-slate-100 rounded bg-indigo-50"><div class="aksara-font-sm">ꦥ꦳</div><div class="text-[9px]">F/V</div></div>
+                            <div class="p-2 border border-slate-100 rounded bg-indigo-50"><div class="aksara-font-sm">ꦗ꦳</div><div class="text-[9px]">Z</div></div>
                         </div>
                     </section>
 
                     <section>
-                        <h3 class="font-bold text-indigo-700 border-b pb-2 mb-4">Contoh Aturan</h3>
+                        <h3 class="font-bold text-indigo-700 border-b pb-2 mb-4">Contoh Aturan Spesifik</h3>
                         <div class="space-y-4">
                             <div class="p-3 bg-slate-50 rounded">
-                                <p class="font-semibold text-slate-700 mb-2 italic">Penggunaan Pangkon (꧀)</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <p class="font-semibold text-slate-700 mb-2 italic text-xs">Kasus Vokal Awal (Ora, Aka, dll)</p>
+                                <div class="grid grid-cols-2 gap-4">
                                     <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                                        <span>Fakta (Mode Biasa)</span> <span class="aksara-font-sm">ꦥ꦳ꦵꦏꦠꦵ</span>
+                                        <span>Ora (O Awal)</span> <span class="aksara-font-sm">ꦄꦴꦫꦵ</span>
                                     </div>
                                     <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                                        <span>Fakta (Pangkon Aktif)</span> <span class="aksara-font-sm">ꦥ꦳ꦵꦏ꧀ꦠꦵ</span>
+                                        <span>Aka (A Awal)</span> <span class="aksara-font-sm">ꦄꦵꦏꦵ</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded">
+                                <p class="font-semibold text-slate-700 mb-2 italic text-xs">Pangkon (Fakta, Zakat, dll)</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                                        <span>Fakta (Biasa)</span> <span class="aksara-font-sm">ꦥ꦳ꦵꦏꦠꦵ</span>
+                                    </div>
+                                    <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                                        <span>Fakta (Pangkon)</span> <span class="aksara-font-sm">ꦥ꦳ꦵꦏ꧀ꦠꦵ</span>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +210,7 @@
         </div>
 
         <footer class="mt-12 text-center text-slate-400 text-sm">
-            <p>Sandhangan Pangkon digunakan untuk mematikan vokal di antara dua konsonan secara manual.</p>
+            <p>Sistem otomatis mendeteksi vokal mandiri di awal kata atau setelah vokal lain.</p>
         </footer>
     </div>
 
@@ -206,10 +219,12 @@
     </div>
 
     <script>
+        // --- DATA MAPPING ---
         const VOWELS = { 'a': 'ꦵ', 'i': 'ꦶ', 'u': 'ꦸ', 'e': 'ꦼ', 'é': 'ꦺ', 'o': 'ꦴ' };
-        const INDEPENDENT_VOWELS = { 'a': 'ꦄꦵ', 'i': 'ꦄꦶ', 'u': 'ꦄꦸ', 'e': 'ꦄꦼ', 'é': 'ꦄꦺ', 'o': 'ꦴ' };
+        const INDEPENDENT_VOWELS = { 
+            'a': 'ꦄꦵ', 'i': 'ꦄꦶ', 'u': 'ꦄꦸ', 'e': 'ꦄꦼ', 'é': 'ꦄꦺ', 'o': 'ꦄꦴ' 
+        };
         
-        // Pemetaan Konsonan Murni (Tanpa vokal a di dalamnya)
         const CONSONANTS = {
             'ng': 'ꦔ', 'ny': 'ꦚ', 'th': 'ꦛ', 'dh': 'ꦝ', 'kh': 'ꦏ꦳', 'sy': 'ꦱ꦳',
             'h': 'ꦲ', 'n': 'ꦤ', 'c': 'ꦕ', 'r': 'ꦫ', 'k': 'ꦏ', 'd': 'ꦢ', 
@@ -221,8 +236,8 @@
         const FINALS = { 'ng': 'ꦁ', 'h': 'ꦃ', 'r': 'ꦂ' };
         const MEDIALS = { 'y': 'ꦾ', 'r': 'ꦿ' };
 
+        // --- ELEMENTS ---
         let isLatinToAksara = true;
-
         const inputText = document.getElementById('inputText');
         const outputText = document.getElementById('outputText');
         const btnSwitch = document.getElementById('btnSwitch');
@@ -240,6 +255,7 @@
 
         function isAlpha(char) { return /[a-zà-ž]/.test(char); }
 
+        // --- CORE CONVERSION ---
         function latinToAksara(text) {
             let result = "";
             let i = 0;
@@ -248,23 +264,34 @@
 
             while (i < t.length) {
                 let char = t[i];
-                if (!isAlpha(char)) { result += char; i++; continue; }
-
-                const isStart = (i === 0 || !isAlpha(t[i-1]));
-                const followsVowel = (i > 0 && VOWELS[t[i-1]]);
-
-                // Vokal Mandiri
-                if ((isStart || followsVowel) && VOWELS[char]) {
-                    result += INDEPENDENT_VOWELS[char]; i++; continue;
+                
+                // Simbol Non-Alfabet
+                if (!isAlpha(char)) {
+                    result += char;
+                    i++;
+                    continue;
                 }
 
+                // DETEKSI VOKAL MANDIRI (Hiatus atau Awal Kata)
+                const isWordStart = (i === 0 || !isAlpha(t[i-1]));
+                const followsVowel = (i > 0 && VOWELS[t[i-1]]);
+
+                if (VOWELS[char] && (isWordStart || followsVowel)) {
+                    result += INDEPENDENT_VOWELS[char];
+                    i++;
+                    continue;
+                }
+
+                // DETEKSI KONSONAN
                 let consStartIndex = i;
                 let cons = "";
-                // Deteksi Digraph (ng, kh, dll)
+                // Cek 2 karakter (ng, kh, dll)
                 if (i + 1 < t.length && CONSONANTS[t.substr(i, 2)]) {
-                    cons = t.substr(i, 2); i += 2;
+                    cons = t.substr(i, 2);
+                    i += 2;
                 } else if (CONSONANTS[char]) {
-                    cons = char; i++;
+                    cons = char;
+                    i++;
                 }
 
                 if (cons) {
@@ -272,28 +299,31 @@
                     let medial = "";
                     let vowel = "";
                     
-                    // Cek Medial (y, r)
+                    // Cek Medial
                     if (i < t.length && MEDIALS[t[i]]) {
                         if (i + 1 < t.length && VOWELS[t[i+1]]) {
-                            medial = MEDIALS[t[i]]; vowel = VOWELS[t[i+1]]; i += 2;
+                            medial = MEDIALS[t[i]]; 
+                            vowel = VOWELS[t[i+1]]; 
+                            i += 2;
                         }
                     }
                     
-                    // Cek Vokal Eksplisit
+                    // Cek Vokal Attached
                     if (!vowel && i < t.length && VOWELS[t[i]]) {
-                        vowel = VOWELS[t[i]]; i++;
+                        vowel = VOWELS[t[i]];
+                        i++;
                     }
 
-                    const prevWasVowel = (consStartIndex > 0 && VOWELS[t[consStartIndex - 1]]);
+                    const prevCharIsVowel = (consStartIndex > 0 && VOWELS[t[consStartIndex - 1]]);
 
-                    // Aturan Panyigeg (ng, h, r) hanya jika setelah vokal
-                    if (!vowel && FINALS[cons] && prevWasVowel) {
+                    // Aturan Panyigeg Khusus (ng, r, h) jika sebelumnya vokal
+                    if (!vowel && FINALS[cons] && prevCharIsVowel) {
                         result += FINALS[cons];
                     } else {
                         if (!vowel) {
-                            // Jika Pangkon aktif dan bertemu konsonan lain
+                            // Jika konsonan mati
                             if (isPangkonActive && i < t.length && isAlpha(t[i]) && !VOWELS[t[i]]) {
-                                result += base + medial + "꧀";
+                                result += base + medial + "꧀"; // Pangkon tengah
                             } else {
                                 result += base + medial;
                             }
@@ -302,6 +332,7 @@
                         }
                     }
                 } else {
+                    // Fail-safe untuk vokal yang terlewat
                     if (VOWELS[char]) result += INDEPENDENT_VOWELS[char];
                     else result += char;
                     i++;
@@ -312,9 +343,11 @@
 
         function aksaraToLatin(text) {
             let res = text;
+            // Decode vokal mandiri
             for (const [lat, aks] of Object.entries(INDEPENDENT_VOWELS)) {
                 res = res.split(aks).join(lat);
             }
+            
             const reverseCons = {};
             for(let k in CONSONANTS) reverseCons[CONSONANTS[k]] = k;
             const reverseVow = {};
@@ -332,12 +365,12 @@
                     finalStr += reverseFin[c];
                 } else if (reverseCons[c]) {
                     let latCons = reverseCons[c];
-                    // Cek Rekan (cecak telu)
                     if (i + 1 < res.length && res[i+1] === '꦳') {
                         let combo = c + '꦳';
                         if (reverseCons[combo]) { latCons = reverseCons[combo]; i++; }
                     }
                     finalStr += latCons;
+                    // Cek aksesoris vokal/medial/pangkon
                     while(i + 1 < res.length && (reverseMed[res[i+1]] || reverseVow[res[i+1]] || res[i+1] === '꧀')) {
                         i++;
                         if (reverseMed[res[i]]) finalStr += reverseMed[res[i]];
@@ -360,6 +393,7 @@
             }
         }
 
+        // --- EVENTS ---
         inputText.addEventListener('input', handleConversion);
         checkStacking.addEventListener('change', handleConversion);
         btnSwitch.addEventListener('click', () => {
@@ -368,7 +402,7 @@
             labelFrom.innerText = labelTo.innerText;
             labelTo.innerText = tempLabel;
             inputLabel.innerText = isLatinToAksara ? "Ketik Latin di sini:" : "Ketik Aksara di sini:";
-            inputText.placeholder = isLatinToAksara ? "Contoh: Fakta zakat..." : "Contoh: ꦥ꦳ꦵꦏꦠꦵ ꦗ꦳ꦵꦏꦵꦠ...";
+            inputText.placeholder = isLatinToAksara ? "Contoh: Ora, fakta..." : "Contoh: ꦄꦴꦫꦵ ꦥ꦳ꦵꦏꦠꦵ...";
             const currentOutput = outputText.innerText;
             inputText.value = currentOutput;
             handleConversion();
