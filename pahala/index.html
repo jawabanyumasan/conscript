@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aksara Jawa Pahala Sadaya Conscript - Canvas Version</title>
+    <title>Aksara Jawa Pahala Sadaya - Canvas Support</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -38,18 +38,21 @@
             background-color: #cbd5e1;
             border-radius: 10px;
         }
+        canvas {
+            display: block;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body class="min-h-screen py-4 md:py-8 px-4">
     <div class="max-w-5xl mx-auto">
         <header class="text-center mb-6 md:mb-8">
             <h1 class="text-2xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Pahala Sadaya Conscript</h1>
-            <p class="text-slate-500 mt-1 text-sm md:text-lg italic">Transliterasi Aksara Jawa Pahala Sadaya (Canvas Engine)</p>
+            <p class="text-slate-500 mt-1 text-sm md:text-lg italic">Transliterasi Aksara Jawa Pahala Sadaya (Canvas Multi-Paragraph)</p>
             <p class="text-indigo-600 font-bold text-[10px] md:text-xs mt-2 uppercase tracking-[0.2em]">Created By Wahyudi</p>
         </header>
 
         <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden">
-            <!-- Kontrol Panel -->
             <div class="bg-slate-50 border-b border-slate-100 p-4 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 md:gap-3 bg-white px-3 py-1.5 md:px-5 md:py-2 rounded-2xl border border-slate-200 shadow-sm">
                     <span id="labelFrom" class="font-bold text-indigo-600 text-xs md:text-base uppercase tracking-wider">Latin</span>
@@ -74,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- Panel Daftar Aksara -->
             <div id="infoPanel" class="transition-panel bg-indigo-50 border-b border-indigo-100 px-5 md:px-8">
                 <div class="py-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
@@ -124,33 +126,27 @@
                 </div>
             </div>
 
-            <!-- Area Editor -->
             <div class="grid grid-cols-1 md:grid-cols-2">
-                <!-- Sisi Input Teks -->
                 <div class="p-6 md:p-8 border-b md:border-b-0 md:border-r border-slate-100">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Input Teks</span>
                         <button id="copyInput" class="text-[10px] font-bold text-indigo-500 hover:underline">Salin Input</button>
                     </div>
-                    <textarea id="inputText" class="w-full h-48 md:h-96 text-lg md:text-xl outline-none placeholder-slate-300 bg-transparent leading-relaxed" placeholder="Ketik Latin ing mriki..."></textarea>
+                    <textarea id="inputText" class="w-full h-64 md:h-[32rem] text-lg md:text-xl outline-none placeholder-slate-300 bg-transparent leading-relaxed" placeholder="Ketik Latin ing mriki..."></textarea>
                 </div>
-                <!-- Sisi Output Render Canvas -->
                 <div class="p-6 md:p-8 bg-slate-50/40 flex flex-col">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hasil Render (Canvas)</span>
                         <button id="copyOutput" class="text-[10px] font-bold text-indigo-500 hover:underline">Salin Hasil</button>
                     </div>
-                    <!-- Wadah Scroll untuk Canvas -->
-                    <div class="w-full h-48 md:h-96 border border-slate-200 bg-white rounded-2xl overflow-auto custom-scroll p-2">
+                    <div class="w-full flex-grow border border-slate-200 bg-white rounded-2xl overflow-auto custom-scroll p-4">
                         <canvas id="canvasOutput" class="mx-auto"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Penyimpanan teks tersembunyi untuk keperluan fungsi Copy Hasil dan Switch/Tukar Mode -->
         <div id="hiddenTextStore" class="hidden"></div>
-
         <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-3 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none font-bold text-xs">
             Berhasil disalin!
         </div>
@@ -163,10 +159,9 @@
                 'fa': 'ꦥ꧀ꦲ', 'va': 'ꦥ꧀ꦲ', 'nga': 'ꦲ꦳', 'ng': 'ꦲ꦳', 'qa': 'ꦏ꦳꧀ꦲ',
                 'ja': 'ꦕ꦳', 'ga': 'ꦏ꦳', 'ba': 'ꦥ꦳', 'ra': 'ꦭ꦳', 'ta': 'ꦢ꦳', 'wa': 'ꦪ꦳', 'ma': 'ꦤ꦳',
                 'pa': 'ꦥ', 'ha': 'ꦲ', 'la': 'ꦭ', 'sa': 'ꦱ', 'da': 'ꦢ', 'ya': 'ꦪ', 'na': 'ꦤ', 'ca': 'ꦕ', 'ka': 'ꦏ',
-                'za': 'ꦱ꦳', 'xa': 'ꦏ꧀ꦱ',
-                'j': 'ꦕ꦳', 'g': 'ꦏ꦳', 'p': 'ꦥ', 'h': 'ꦲ', 'l': 'ꦭ', 's': 'ꦱ', 'd': 'ꦢ', 'y': 'ꦪ', 'n': 'ꦤ', 
-                'c': 'ꦕ', 'k': 'ꦏ', 'b': 'ꦥ꦳', 'r': 'ꦭ꦳', 't': 'ꦢ꦳', 'w': 'ꦪ꦳', 'm': 'ꦤ꦳', 'v': 'ꦥ꧀ꦲ', 'f': 'ꦥ꧀ꦲ',
-                'z': 'ꦱ꦳', 'x': 'ꦏ꧀ꦱ', 'q': 'ꦏ꦳꧀ꦲ'
+                'za': 'ꦱ꦳', 'xa': 'ꦏ꧀ꦱ', 'j': 'ꦕ꦳', 'g': 'ꦏ꦳', 'p': 'ꦥ', 'h': 'ꦲ', 'l': 'ꦭ', 's': 'ꦱ', 
+                'd': 'ꦢ', 'y': 'ꦪ', 'n': 'ꦤ', 'c': 'ꦕ', 'k': 'ꦏ', 'b': 'ꦥ꦳', 'r': 'ꦭ꦳', 't': 'ꦢ꦳', 
+                'w': 'ꦪ꦳', 'm': 'ꦤ꦳', 'v': 'ꦥ꧀ꦲ', 'f': 'ꦥ꧀ꦲ', 'z': 'ꦱ꦳', 'x': 'ꦏ꧀ꦱ', 'q': 'ꦏ꦳꧀ꦲ'
             },
             swara: {
                 'a': 'ꦄ', 'i': 'ꦄꦶ', 'u': 'ꦄꦸ', 'e': 'ꦄꦼ', 'é': 'ꦄꦺ', 'o': 'ꦄꦴ'
@@ -210,38 +205,23 @@
 
             while ((match = regexRaw.exec(text)) !== null) {
                 if (match.index > lastIndex) {
-                    tokens.push({
-                        type: 'trans',
-                        value: text.substring(lastIndex, match.index)
-                    });
+                    tokens.push({ type: 'trans', value: text.substring(lastIndex, match.index) });
                 }
-                tokens.push({
-                    type: 'raw',
-                    value: match[1]
-                });
+                tokens.push({ type: 'raw', value: match[1] });
                 lastIndex = regexRaw.lastIndex;
             }
 
             if (lastIndex < text.length) {
-                tokens.push({
-                    type: 'trans',
-                    value: text.substring(lastIndex)
-                });
+                tokens.push({ type: 'trans', value: text.substring(lastIndex) });
             }
 
-            if(tokens.length === 0) {
-                tokens.push({ type: 'trans', value: text });
-            }
+            if (tokens.length === 0) tokens.push({ type: 'trans', value: text });
 
             let finalRes = "";
             tokens.forEach(token => {
-                if (token.type === 'raw') {
-                    finalRes += token.value;
-                } else {
-                    finalRes += processLatinChunk(token.value);
-                }
+                if (token.type === 'raw') finalRes += token.value;
+                else finalRes += processLatinChunk(token.value);
             });
-
             return finalRes;
         }
 
@@ -253,17 +233,15 @@
 
             while (i < text.length) {
                 let char = text[i];
-
                 if (!/[a-zà-ÿ]/.test(char)) {
                     res += char;
-                    lastWasVowel = (char === '\n') ? false : lastWasVowel;
+                    lastWasVowel = (char === '\n' || char === ' ' || char === '-') ? false : lastWasVowel;
                     i++;
                     continue;
                 }
 
                 let cMatch = "";
                 const sortedKeys = Object.keys(MAPPING.consonants).sort((a,b) => b.length - a.length);
-                
                 for (let k of sortedKeys) {
                     if (text.startsWith(k, i)) {
                         cMatch = k;
@@ -286,25 +264,18 @@
                     }
 
                     if (cMatch.endsWith('a')) {
-                        res += base;
-                        lastWasVowel = true;
-                        i = cursor;
+                        res += base; lastWasVowel = true; i = cursor;
                     } else {
                         let wMark = "";
                         if (/[yr]/.test(vMatch) && text[cursor+1] && /[aiueoé]/.test(text[cursor+1])) {
                             wMark = MAPPING.wyanjana[vMatch];
-                            cursor++;
-                            vMatch = text[cursor];
+                            cursor++; vMatch = text[cursor];
                         }
-
                         if (vMatch && /[aiueoé]/.test(vMatch)) {
                             res += base + wMark + (vMatch === 'a' ? "" : MAPPING.sandhangan[vMatch]);
-                            lastWasVowel = true;
-                            i = cursor + 1;
+                            lastWasVowel = true; i = cursor + 1;
                         } else {
-                            res += base + "꧀";
-                            lastWasVowel = false;
-                            i = cursor;
+                            res += base + "꧀"; lastWasVowel = false; i = cursor;
                         }
                     }
                     continue;
@@ -312,18 +283,11 @@
 
                 if (/[aiueoé]/.test(char)) {
                     const isBoundary = (i === 0 || /[\s\n\-]/.test(text[i-1]));
-                    if (isBoundary || lastWasVowel) {
-                        res += MAPPING.swara[char] || char;
-                    } else {
-                        res += MAPPING.swara[char] || char;
-                    }
-                    lastWasVowel = true;
-                    i++;
-                    continue;
+                    if (isBoundary || lastWasVowel) res += MAPPING.swara[char] || char;
+                    else res += MAPPING.swara[char] || char;
+                    lastWasVowel = true; i++; continue;
                 }
-
-                res += char;
-                i++;
+                res += char; i++;
             }
             return res;
         }
@@ -338,35 +302,43 @@
                 ['ꦶ', 'i'], ['ꦸ', 'u'], ['ꦼ', 'e'], ['ꦺ', 'é'], ['ꦴ', 'o'],
                 ['ꦃ', 'h'], ['ꦂ', 'r'], ['ꦁ', 'ng'], ['ꦾ', 'y'], ['ꦿ', 'r'], ['꧀', '']
             ];
-
-            items.forEach(([aks, lat]) => {
-                res = res.split(aks).join(lat);
-            });
-
+            items.forEach(([aks, lat]) => { res = res.split(aks).join(lat); });
             res = res.replace(/([bcdfghjklmnpqrstvwxyz])([aeioué])a/gi, '$1$2');
             res = res.replace(/\s\s+/g, ' ');
             return res;
         }
 
-        // FUNGSI RENDER CANVAS
         function renderToCanvas(text, useAksaraFont) {
             const lines = text.split('\n');
-            const fontSize = useAksaraFont ? 20 : 16; // Font Aksara diporog langkung alit jumbuh panyuwunan
+            const fontSize = useAksaraFont ? 20 : 16; 
             const fontName = useAksaraFont ? "'Noto Sans Javanese'" : "'Inter'";
-            const lineHeight = fontSize * 1.6;
+            const lineHeight = fontSize * 1.8;
+            const padding = 20;
             
-            canvas.width = Math.max(window.innerWidth < 640 ? 320 : 460, 400);
-            canvas.height = Math.max(180, lines.length * lineHeight + 40);
+            // Measure widths to set canvas width
+            ctx.font = `${fontSize}px ${fontName}`;
+            let maxWidth = 0;
+            lines.forEach(line => {
+                const metrics = ctx.measureText(line);
+                if (metrics.width > maxWidth) maxWidth = metrics.width;
+            });
 
+            // Set canvas dimensions
+            canvas.width = Math.max(maxWidth + (padding * 2), 400);
+            canvas.height = Math.max(lines.length * lineHeight + (padding * 2), 200);
+
+            // Background
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Text Styles
             ctx.fillStyle = "#1e293b";
             ctx.textBaseline = "top";
             ctx.font = `${fontSize}px ${fontName}`;
 
+            // Render
             lines.forEach((line, index) => {
-                ctx.fillText(line, 20, 20 + (index * lineHeight));
+                ctx.fillText(line, padding, padding + (index * lineHeight));
             });
         }
 
@@ -393,24 +365,19 @@
             isLatinToAksara = !isLatinToAksara;
             const currentOutputText = hiddenStore.innerText;
             input.value = currentOutputText;
-
             if (isLatinToAksara) {
-                labelFrom.innerText = "Latin";
-                labelTo.innerText = "Aksara";
+                labelFrom.innerText = "Latin"; labelTo.innerText = "Aksara";
                 input.placeholder = "Ketik Latin ing mriki...";
             } else {
-                labelFrom.innerText = "Aksara";
-                labelTo.innerText = "Latin";
+                labelFrom.innerText = "Aksara"; labelTo.innerText = "Latin";
                 input.placeholder = "Masukkan Aksara Jawa di sini...";
             }
             handleUpdate();
         });
 
         clearBtn.addEventListener('click', () => {
-            input.value = "";
-            hiddenStore.innerText = "";
-            handleUpdate();
-            input.focus();
+            input.value = ""; hiddenStore.innerText = "";
+            handleUpdate(); input.focus();
         });
 
         function copyToClipboard(text) {
@@ -420,7 +387,6 @@
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-            
             toast.style.opacity = '1';
             setTimeout(() => toast.style.opacity = '0', 2000);
         }
