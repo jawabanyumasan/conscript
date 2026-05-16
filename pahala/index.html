@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aksara Jawa Pahala Sadaya Conscript - Canvas Version</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        textarea {
+            resize: none;
+        }
+        .btn-action {
+            transition: all 0.2s;
+        }
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+        .transition-panel {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .transition-panel.show {
+            max-height: 2000px;
+            opacity: 1;
+            padding-bottom: 1.5rem;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-4 md:py-8 px-4">
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Pahala Sadaya Conscript</h1>
+            <p class="text-slate-500 mt-1 text-sm md:text-lg italic">Transliterasi Aksara Jawa Pahala Sadaya (Canvas Engine)</p>
+            <p class="text-indigo-600 font-bold text-[10px] md:text-xs mt-2 uppercase tracking-[0.2em]">Created By Wahyudi</p>
+        </header>
+
+        <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden">
+            <!-- Kontrol Panel -->
+            <div class="bg-slate-50 border-b border-slate-100 p-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2 md:gap-3 bg-white px-3 py-1.5 md:px-5 md:py-2 rounded-2xl border border-slate-200 shadow-sm">
+                    <span id="labelFrom" class="font-bold text-indigo-600 text-xs md:text-base uppercase tracking-wider">Latin</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    <span id="labelTo" class="font-bold text-indigo-600 text-xs md:text-base uppercase tracking-wider">Aksara</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="clearBtn" class="btn-action px-3 py-1.5 md:px-5 md:py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl font-bold hover:bg-rose-100 text-xs">
+                        Bersihkan
+                    </button>
+                    <button id="switchBtn" class="btn-action px-4 py-1.5 md:px-6 md:py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-md text-xs">
+                        Tukar Mode
+                    </button>
+                    <button id="infoBtn" class="btn-action p-2 md:p-2 bg-slate-200 text-slate-700 rounded-full hover:bg-slate-300 shadow-sm" title="Daftar Aksara">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Daftar Aksara -->
+            <div id="infoPanel" class="transition-panel bg-indigo-50 border-b border-indigo-100 px-5 md:px-8">
+                <div class="py-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <h4 class="font-bold text-indigo-800 mb-3 text-xs md:text-sm border-b border-indigo-200 pb-1 uppercase tracking-tighter">Aksara Dhasar</h4>
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] md:text-xs text-slate-600">
+                            <span>ꦕ꦳ ja</span><span>ꦏ꦳ ga</span>
+                            <span>ꦥ pa</span><span>ꦲ ha</span>
+                            <span>ꦭ la</span><span>ꦱ sa</span>
+                            <span>ꦢ da</span><span>ꦪ ya</span>
+                            <span>ꦤ na</span><span>ꦕ ca</span>
+                            <span>ꦏ ka</span><span>ꦥ꦳ ba</span>
+                            <span>ꦲ꦳ nga</span><span>ꦭ꦳ ra</span>
+                            <span>ꦱ꦳ za</span><span>ꦢ꦳ ta</span>
+                            <span>ꦪ꦳ wa</span><span>ꦤ꦳ ma</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-indigo-800 mb-3 text-xs md:text-sm border-b border-indigo-200 pb-1 uppercase tracking-tighter">Aksara Rekaan</h4>
+                        <div class="grid grid-cols-1 gap-y-1 text-[11px] md:text-xs text-slate-600">
+                            <span>ꦤ꧀ꦚ nya</span>
+                            <span>ꦱꦾ sya</span>
+                            <div class="mt-1 space-y-1">
+                                <span>tha: ꦢ꦳꧀ꦲ</span>
+                                <span>dha: ꦢ꧀ꦲ</span>
+                                <span>kha: ꦏ꧀ꦲ</span>
+                                <span>fa/va: ꦥ꧀ꦲ</span>
+                                <span>qa: ꦏ꦳꧀ꦲ</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-indigo-800 mb-3 text-xs md:text-sm border-b border-indigo-200 pb-1 uppercase tracking-tighter">Aksara Swara</h4>
+                        <div class="grid grid-cols-2 gap-y-1 text-[11px] md:text-xs text-slate-600">
+                            <span>ꦄ a</span><span>ꦄꦶ i</span>
+                            <span>ꦄꦸ u</span><span>ꦄꦼ e</span>
+                            <span>ꦄꦺ é</span><span>ꦄꦴ o</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-indigo-800 mb-3 text-xs md:text-sm border-b border-indigo-200 pb-1 uppercase tracking-tighter">Kons. + Vokal</h4>
+                        <div class="grid grid-cols-2 gap-y-1 text-[11px] md:text-xs text-slate-600">
+                            <span>ꦏ꦳ ga</span><span>ꦏ꦳ꦶ gi</span>
+                            <span>ꦏ꦳ꦸ gu</span><span>ꦏ꦳ꦼ ge</span>
+                            <span>ꦏ꦳ꦺ gé</span><span>ꦏ꦳ꦴ go</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Area Editor -->
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <!-- Sisi Input Teks -->
+                <div class="p-6 md:p-8 border-b md:border-b-0 md:border-r border-slate-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Input Teks</span>
+                        <button id="copyInput" class="text-[10px] font-bold text-indigo-500 hover:underline">Salin Input</button>
+                    </div>
+                    <textarea id="inputText" class="w-full h-48 md:h-96 text-lg md:text-xl outline-none placeholder-slate-300 bg-transparent leading-relaxed" placeholder="Ketik Latin ing mriki..."></textarea>
+                </div>
+                <!-- Sisi Output Render Canvas -->
+                <div class="p-6 md:p-8 bg-slate-50/40 flex flex-col">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hasil Render (Canvas)</span>
+                        <button id="downloadCanvas" class="text-[10px] font-bold text-emerald-600 hover:underline">Unduh Gambar (.png)</button>
+                    </div>
+                    <!-- Wadah Scroll untuk Canvas -->
+                    <div class="w-full h-48 md:h-96 border border-slate-200 bg-white rounded-2xl overflow-auto custom-scroll p-2">
+                        <canvas id="canvasOutput" class="mx-auto"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Penyimpanan teks tersembunyi untuk keperluan fungsi Switch/Tukar Mode -->
+        <div id="hiddenTextStore" class="hidden"></div>
+
+        <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-3 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none font-bold text-xs">
+            Berhasil disalin!
+        </div>
+    </div>
+
+    <script>
+        const MAPPING = {
+            consonants: {
+                'nya': 'ꦤ꧀ꦚ', 'sya': 'ꦱꦾ', 'tha': 'ꦢ꦳꧀ꦲ', 'dha': 'ꦢ꧀ꦲ', 'kha': 'ꦏ꧀ꦲ', 
+                'fa': 'ꦥ꧀ꦲ', 'va': 'ꦥ꧀ꦲ', 'nga': 'ꦲ꦳', 'ng': 'ꦲ꦳', 'qa': 'ꦏ꦳꧀ꦲ',
+                'ja': 'ꦕ꦳', 'ga': 'ꦏ꦳', 'ba': 'ꦥ꦳', 'ra': 'ꦭ꦳', 'ta': 'ꦢ꦳', 'wa': 'ꦪ꦳', 'ma': 'ꦤ꦳',
+                'pa': 'ꦥ', 'ha': 'ꦲ', 'la': 'ꦭ', 'sa': 'ꦱ', 'da': 'ꦢ', 'ya': 'ꦪ', 'na': 'ꦤ', 'ca': 'ꦕ', 'ka': 'ꦏ',
+                'za': 'ꦱ꦳', 'xa': 'ꦏ꧀ꦱ',
+                'j': 'ꦕ꦳', 'g': 'ꦏ꦳', 'p': 'ꦥ', 'h': 'ꦲ', 'l': 'ꦭ', 's': 'ꦱ', 'd': 'ꦢ', 'y': 'ꦪ', 'n': 'ꦤ', 
+                'c': 'ꦕ', 'k': 'ꦏ', 'b': 'ꦥ꦳', 'r': 'ꦭ꦳', 't': 'ꦢ꦳', 'w': 'ꦪ꦳', 'm': 'ꦤ꦳', 'v': 'ꦥ꧀ꦲ', 'f': 'ꦥ꧀ꦲ',
+                'z': 'ꦱ꦳', 'x': 'ꦏ꧀ꦱ', 'q': 'ꦏ꦳꧀ꦲ'
+            },
+            swara: {
+                'a': 'ꦄ', 'i': 'ꦄꦶ', 'u': 'ꦄꦸ', 'e': 'ꦄꦼ', 'é': 'ꦄꦺ', 'o': 'ꦄꦴ'
+            },
+            sandhangan: {
+                'i': 'ꦶ', 'u': 'ꦸ', 'e': 'ꦼ', 'é': 'ꦺ', 'o': 'ꦴ'
+            },
+            panyigeg: {
+                'h': 'ꦃ', 'r': 'ꦂ', 'ng': 'ꦁ'
+            },
+            wyanjana: {
+                'y': 'ꦾ', 'r': 'ꦿ'
+            }
+        };
+
+        const input = document.getElementById('inputText');
+        const canvas = document.getElementById('canvasOutput');
+        const ctx = canvas.getContext('2d');
+        const switchBtn = document.getElementById('switchBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const infoBtn = document.getElementById('infoBtn');
+        const infoPanel = document.getElementById('infoPanel');
+        const labelFrom = document.getElementById('labelFrom');
+        const labelTo = document.getElementById('labelTo');
+        const toast = document.getElementById('toast');
+        const hiddenStore = document.getElementById('hiddenTextStore');
+        const downloadBtn = document.getElementById('downloadCanvas');
+
+        let isLatinToAksara = true;
+
+        // Toggle info panel
+        infoBtn.addEventListener('click', () => {
+            infoPanel.classList.toggle('show');
+            infoBtn.classList.toggle('bg-indigo-600');
+            infoBtn.classList.toggle('text-white');
+        });
+
+        function parseLatinToAksara(text) {
+            const regexRaw = /\*\*\*([\s\S]*?)\*\*\*/g;
+            let tokens = [];
+            let lastIndex = 0;
+            let match;
+
+            while ((match = regexRaw.exec(text)) !== null) {
+                if (match.index > lastIndex) {
+                    tokens.push({
+                        type: 'trans',
+                        value: text.substring(lastIndex, match.index)
+                    });
+                }
+                tokens.push({
+                    type: 'raw',
+                    value: match[1]
+                });
+                lastIndex = regexRaw.lastIndex;
+            }
+
+            if (lastIndex < text.length) {
+                tokens.push({
+                    type: 'trans',
+                    value: text.substring(lastIndex)
+                });
+            }
+
+            if(tokens.length === 0) {
+                tokens.push({ type: 'trans', value: text });
+            }
+
+            let finalRes = "";
+            tokens.forEach(token => {
+                if (token.type === 'raw') {
+                    finalRes += token.value;
+                } else {
+                    finalRes += processLatinChunk(token.value);
+                }
+            });
+
+            return finalRes;
+        }
+
+        function processLatinChunk(text) {
+            text = text.toLowerCase().replace(/e'/g, 'é');
+            let res = "";
+            let i = 0;
+            let lastWasVowel = false;
+
+            while (i < text.length) {
+                let char = text[i];
+
+                if (!/[a-zà-ÿ]/.test(char)) {
+                    res += char;
+                    lastWasVowel = (char === '\n') ? false : lastWasVowel;
+                    i++;
+                    continue;
+                }
+
+                let cMatch = "";
+                const sortedKeys = Object.keys(MAPPING.consonants).sort((a,b) => b.length - a.length);
+                
+                for (let k of sortedKeys) {
+                    if (text.startsWith(k, i)) {
+                        cMatch = k;
+                        break;
+                    }
+                }
+
+                if (cMatch) {
+                    let base = MAPPING.consonants[cMatch];
+                    let cursor = i + cMatch.length;
+                    let vMatch = text[cursor] ? text[cursor] : "";
+                    
+                    if (lastWasVowel && (cMatch === 'h' || cMatch === 'r' || cMatch === 'ng')) {
+                        if (!vMatch || !/[aiueoé]/.test(vMatch)) {
+                            res += MAPPING.panyigeg[cMatch];
+                            lastWasVowel = false;
+                            i = cursor;
+                            continue;
+                        }
+                    }
+
+                    if (cMatch.endsWith('a')) {
+                        res += base;
+                        lastWasVowel = true;
+                        i = cursor;
+                    } else {
+                        let wMark = "";
+                        if (/[yr]/.test(vMatch) && text[cursor+1] && /[aiueoé]/.test(text[cursor+1])) {
+                            wMark = MAPPING.wyanjana[vMatch];
+                            cursor++;
+                            vMatch = text[cursor];
+                        }
+
+                        if (vMatch && /[aiueoé]/.test(vMatch)) {
+                            res += base + wMark + (vMatch === 'a' ? "" : MAPPING.sandhangan[vMatch]);
+                            lastWasVowel = true;
+                            i = cursor + 1;
+                        } else {
+                            res += base + "꧀";
+                            lastWasVowel = false;
+                            i = cursor;
+                        }
+                    }
+                    continue;
+                }
+
+                if (/[aiueoé]/.test(char)) {
+                    const isBoundary = (i === 0 || /[\s\n\-]/.test(text[i-1]));
+                    if (isBoundary || lastWasVowel) {
+                        res += MAPPING.swara[char] || char;
+                    } else {
+                        res += MAPPING.swara[char] || char;
+                    }
+                    lastWasVowel = true;
+                    i++;
+                    continue;
+                }
+
+                res += char;
+                i++;
+            }
+            return res;
+        }
+
+        function parseAksaraToLatin(text) {
+            let res = text;
+            const items = [
+                ['ꦄꦶ', 'i'], ['ꦄꦸ', 'u'], ['ꦄꦼ', 'e'], ['ꦄꦺ', 'é'], ['ꦄꦴ', 'o'], ['ꦄ', 'a'],
+                ['ꦤ꧀ꦚ', 'nya'], ['ꦱꦾ', 'sya'], ['ꦢ꦳꧀ꦲ', 'tha'], ['ꦢ꧀ꦲ', 'dha'], ['ꦏ꦳꧀ꦲ', 'qa'], ['ꦏ꧀ꦲ', 'kha'], ['ꦥ꧀ꦲ', 'fa'],
+                ['ꦲ꦳', 'nga'], ['ꦕ꦳', 'ja'], ['ꦏ꦳', 'ga'], ['ꦥ꦳', 'ba'], ['ꦭ꦳', 'ra'], ['ꦱ꦳', 'za'], ['ꦏ꧀ꦱ', 'xa'], ['ꦢ꦳', 'ta'], ['ꦪ꦳', 'wa'], ['ꦤ꦳', 'ma'],
+                ['ꦲ', 'ha'], ['ꦤ', 'na'], ['ꦕ', 'ca'], ['ꦭ', 'la'], ['ꦏ', 'ka'], ['ꦢ', 'da'], ['ꦱ', 'sa'], ['ꦪ', 'ya'], ['ꦥ', 'pa'],
+                ['ꦶ', 'i'], ['ꦸ', 'u'], ['ꦼ', 'e'], ['ꦺ', 'é'], ['ꦴ', 'o'],
+                ['ꦃ', 'h'], ['ꦂ', 'r'], ['ꦁ', 'ng'], ['ꦾ', 'y'], ['ꦿ', 'r'], ['꧀', '']
+            ];
+
+            items.forEach(([aks, lat]) => {
+                res = res.split(aks).join(lat);
+            });
+
+            res = res.replace(/([bcdfghjklmnpqrstvwxyz])([aeioué])a/gi, '$1$2');
+            res = res.replace(/\s\s+/g, ' ');
+            return res;
+        }
+
+        // FUNGSI RENDER CANVAS UTAMA
+        function renderToCanvas(text, useAksaraFont) {
+            const lines = text.split('\n');
+            const fontSize = useAksaraFont ? 26 : 18; 
+            const fontName = useAksaraFont ? "'Noto Sans Javanese'" : "'Inter'";
+            const lineHeight = fontSize * 1.6;
+            
+            // Atur ukuran canvas dinamis berdasarkan jumlah baris teks
+            canvas.width = Math.max(window.innerWidth < 640 ? 320 : 460, 400);
+            canvas.height = Math.max(180, lines.length * lineHeight + 40);
+
+            // Bersihkan Canvas
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Pengaturan Font
+            ctx.fillStyle = "#1e293b"; // warna slate-800
+            ctx.textBaseline = "top";
+            ctx.font = `${fontSize}px ${fontName}`;
+
+            // Render Teks per Baris
+            lines.forEach((line, index) => {
+                ctx.fillText(line, 20, 20 + (index * lineHeight));
+            });
+        }
+
+        function handleUpdate() {
+            const val = input.value;
+            if (isLatinToAksara) {
+                const transformed = parseLatinToAksara(val);
+                hiddenStore.innerText = transformed; // Simpan untuk cadangan konversi sebaliknya
+                renderToCanvas(transformed, true);
+            } else {
+                const transformed = parseAksaraToLatin(val);
+                hiddenStore.innerText = transformed;
+                renderToCanvas(transformed, false);
+            }
+        }
+
+        input.addEventListener('input', handleUpdate);
+
+        // Tunggu Font Selesai Dimuat Agar Canvas Merender Bentuk Pasangan Dengan Sempurna
+        document.fonts.ready.then(() => {
+            handleUpdate();
+        });
+
+        // Aksi Tukar Mode (Switch)
+        switchBtn.addEventListener('click', () => {
+            isLatinToAksara = !isLatinToAksara;
+            
+            // Ambil teks hasil konversi dari penyimpanan tersembunyi
+            const currentOutputText = hiddenStore.innerText;
+            input.value = currentOutputText;
+
+            if (isLatinToAksara) {
+                labelFrom.innerText = "Latin";
+                labelTo.innerText = "Aksara";
+                input.placeholder = "Ketik Latin ing mriki...";
+            } else {
+                labelFrom.innerText = "Aksara";
+                labelTo.innerText = "Latin";
+                input.placeholder = "Masukkan Aksara Jawa di sini...";
+            }
+            handleUpdate();
+        });
+
+        // Tombol Bersihkan
+        clearBtn.addEventListener('click', () => {
+            input.value = "";
+            hiddenStore.innerText = "";
+            handleUpdate();
+            input.focus();
+        });
+
+        // Fungsi Salin Input
+        document.getElementById('copyInput').addEventListener('click', () => {
+            const el = document.createElement('textarea');
+            el.value = input.value;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 2000);
+        });
+
+        // Fungsi Unduh Gambar Canvas (.png)
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'aksara-pahala-sadaya.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    </script>
+</body>
+</html>
