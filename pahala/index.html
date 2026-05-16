@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aksara Jawa Pahala Sadaya - Canvas Support</title>
+    <title>Aksara Jawa Pahala Sadaya Conscript</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
+        }
+        .aksara-font {
+            font-family: 'Noto Sans Javanese', serif;
+            /* Font dipun-perkecil supados pas ing layar HP */
+            font-size: 1.15rem; 
+            line-height: 2;
+        }
+        @media (min-width: 768px) {
+            .aksara-font {
+                font-size: 1.4rem;
+            }
         }
         textarea {
             resize: none;
@@ -38,9 +49,10 @@
             background-color: #cbd5e1;
             border-radius: 10px;
         }
-        canvas {
-            display: block;
-            max-width: 100%;
+        #outputText {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
         }
     </style>
 </head>
@@ -48,7 +60,7 @@
     <div class="max-w-5xl mx-auto">
         <header class="text-center mb-6 md:mb-8">
             <h1 class="text-2xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Pahala Sadaya Conscript</h1>
-            <p class="text-slate-500 mt-1 text-sm md:text-lg italic">Transliterasi Aksara Jawa Pahala Sadaya (Canvas Multi-Paragraph)</p>
+            <p class="text-slate-500 mt-1 text-sm md:text-lg italic">Transliterasi Aksara Jawa Pahala Sadaya (Text Version)</p>
             <p class="text-indigo-600 font-bold text-[10px] md:text-xs mt-2 uppercase tracking-[0.2em]">Created By Wahyudi</p>
         </header>
 
@@ -104,6 +116,7 @@
                                 <span>kha: ꦏ꧀ꦲ</span>
                                 <span>fa/va: ꦥ꧀ꦲ</span>
                                 <span>qa: ꦏ꦳꧀ꦲ</span>
+                                <span>xa: ꦏ꧀ꦱ</span>
                             </div>
                         </div>
                     </div>
@@ -130,18 +143,16 @@
                 <div class="p-6 md:p-8 border-b md:border-b-0 md:border-r border-slate-100">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Input Teks</span>
-                        <button id="copyInput" class="text-[10px] font-bold text-indigo-500 hover:underline">Salin Input</button>
+                        <button id="copyInput" class="text-[10px] font-bold text-indigo-500 hover:underline font-semibold">Salin Input</button>
                     </div>
                     <textarea id="inputText" class="w-full h-64 md:h-[32rem] text-lg md:text-xl outline-none placeholder-slate-300 bg-transparent leading-relaxed" placeholder="Ketik Latin ing mriki..."></textarea>
                 </div>
                 <div class="p-6 md:p-8 bg-slate-50/40 flex flex-col">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hasil Render (Canvas)</span>
-                        <button id="copyOutput" class="text-[10px] font-bold text-indigo-500 hover:underline">Salin Hasil</button>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hasil Transliterasi (Teks)</span>
+                        <button id="copyOutput" class="text-[10px] font-bold text-indigo-500 hover:underline font-semibold">Salin Hasil</button>
                     </div>
-                    <div class="w-full flex-grow border border-slate-200 bg-white rounded-2xl overflow-auto custom-scroll p-4">
-                        <canvas id="canvasOutput" class="mx-auto"></canvas>
-                    </div>
+                    <div id="outputText" class="w-full h-64 md:h-[32rem] border border-slate-200 bg-white rounded-2xl overflow-auto custom-scroll p-4 md:p-6 aksara-font selection:bg-indigo-100"></div>
                 </div>
             </div>
         </div>
@@ -178,8 +189,7 @@
         };
 
         const input = document.getElementById('inputText');
-        const canvas = document.getElementById('canvasOutput');
-        const ctx = canvas.getContext('2d');
+        const output = document.getElementById('outputText');
         const switchBtn = document.getElementById('switchBtn');
         const clearBtn = document.getElementById('clearBtn');
         const infoBtn = document.getElementById('infoBtn');
@@ -233,6 +243,7 @@
 
             while (i < text.length) {
                 let char = text[i];
+
                 if (!/[a-zà-ÿ]/.test(char)) {
                     res += char;
                     lastWasVowel = (char === '\n' || char === ' ' || char === '-') ? false : lastWasVowel;
@@ -308,58 +319,20 @@
             return res;
         }
 
-        function renderToCanvas(text, useAksaraFont) {
-            const lines = text.split('\n');
-            const fontSize = useAksaraFont ? 20 : 16; 
-            const fontName = useAksaraFont ? "'Noto Sans Javanese'" : "'Inter'";
-            const lineHeight = fontSize * 1.8;
-            const padding = 20;
-            
-            // Measure widths to set canvas width
-            ctx.font = `${fontSize}px ${fontName}`;
-            let maxWidth = 0;
-            lines.forEach(line => {
-                const metrics = ctx.measureText(line);
-                if (metrics.width > maxWidth) maxWidth = metrics.width;
-            });
-
-            // Set canvas dimensions
-            canvas.width = Math.max(maxWidth + (padding * 2), 400);
-            canvas.height = Math.max(lines.length * lineHeight + (padding * 2), 200);
-
-            // Background
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Text Styles
-            ctx.fillStyle = "#1e293b";
-            ctx.textBaseline = "top";
-            ctx.font = `${fontSize}px ${fontName}`;
-
-            // Render
-            lines.forEach((line, index) => {
-                ctx.fillText(line, padding, padding + (index * lineHeight));
-            });
-        }
-
         function handleUpdate() {
             const val = input.value;
             if (isLatinToAksara) {
                 const transformed = parseLatinToAksara(val);
+                output.innerText = transformed;
                 hiddenStore.innerText = transformed;
-                renderToCanvas(transformed, true);
             } else {
                 const transformed = parseAksaraToLatin(val);
+                output.innerText = transformed;
                 hiddenStore.innerText = transformed;
-                renderToCanvas(transformed, false);
             }
         }
 
         input.addEventListener('input', handleUpdate);
-
-        document.fonts.ready.then(() => {
-            handleUpdate();
-        });
 
         switchBtn.addEventListener('click', () => {
             isLatinToAksara = !isLatinToAksara;
