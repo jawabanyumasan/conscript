@@ -13,7 +13,6 @@
         }
         .aksara-font {
             font-family: 'Noto Sans Javanese', serif;
-            /* Font dipun-perkecil supados pas ing layar HP */
             font-size: 1.15rem; 
             line-height: 2;
         }
@@ -246,6 +245,7 @@
 
                 if (!/[a-zà-ÿ]/.test(char)) {
                     res += char;
+                    // Preserve newlines and spaces, but reset vowel state for formatting
                     lastWasVowel = (char === '\n' || char === ' ' || char === '-') ? false : lastWasVowel;
                     i++;
                     continue;
@@ -324,7 +324,7 @@
             if (isLatinToAksara) {
                 const transformed = parseLatinToAksara(val);
                 output.innerText = transformed;
-                hiddenStore.innerText = transformed;
+                hiddenStore.innerText = transformed; // Keeping formatted string in memory
             } else {
                 const transformed = parseAksaraToLatin(val);
                 output.innerText = transformed;
