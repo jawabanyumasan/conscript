@@ -138,7 +138,7 @@
                 <div class="p-6 md:p-8 bg-slate-50/40 flex flex-col">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hasil Render (Canvas)</span>
-                        <button id="downloadCanvas" class="text-[10px] font-bold text-emerald-600 hover:underline">Unduh Gambar (.png)</button>
+                        <button id="copyOutput" class="text-[10px] font-bold text-indigo-500 hover:underline">Salin Hasil</button>
                     </div>
                     <!-- Wadah Scroll untuk Canvas -->
                     <div class="w-full h-48 md:h-96 border border-slate-200 bg-white rounded-2xl overflow-auto custom-scroll p-2">
@@ -148,7 +148,7 @@
             </div>
         </div>
 
-        <!-- Penyimpanan teks tersembunyi untuk keperluan fungsi Switch/Tukar Mode -->
+        <!-- Penyimpanan teks tersembunyi untuk keperluan fungsi Copy Hasil dan Switch/Tukar Mode -->
         <div id="hiddenTextStore" class="hidden"></div>
 
         <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-3 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none font-bold text-xs">
@@ -193,11 +193,9 @@
         const labelTo = document.getElementById('labelTo');
         const toast = document.getElementById('toast');
         const hiddenStore = document.getElementById('hiddenTextStore');
-        const downloadBtn = document.getElementById('downloadCanvas');
 
         let isLatinToAksara = true;
 
-        // Toggle info panel
         infoBtn.addEventListener('click', () => {
             infoPanel.classList.toggle('show');
             infoBtn.classList.toggle('bg-indigo-600');
@@ -350,27 +348,23 @@
             return res;
         }
 
-        // FUNGSI RENDER CANVAS UTAMA
+        // FUNGSI RENDER CANVAS
         function renderToCanvas(text, useAksaraFont) {
             const lines = text.split('\n');
-            const fontSize = useAksaraFont ? 26 : 18; 
+            const fontSize = useAksaraFont ? 20 : 16; // Font Aksara diporog langkung alit jumbuh panyuwunan
             const fontName = useAksaraFont ? "'Noto Sans Javanese'" : "'Inter'";
             const lineHeight = fontSize * 1.6;
             
-            // Atur ukuran canvas dinamis berdasarkan jumlah baris teks
             canvas.width = Math.max(window.innerWidth < 640 ? 320 : 460, 400);
             canvas.height = Math.max(180, lines.length * lineHeight + 40);
 
-            // Bersihkan Canvas
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Pengaturan Font
-            ctx.fillStyle = "#1e293b"; // warna slate-800
+            ctx.fillStyle = "#1e293b";
             ctx.textBaseline = "top";
             ctx.font = `${fontSize}px ${fontName}`;
 
-            // Render Teks per Baris
             lines.forEach((line, index) => {
                 ctx.fillText(line, 20, 20 + (index * lineHeight));
             });
@@ -380,7 +374,7 @@
             const val = input.value;
             if (isLatinToAksara) {
                 const transformed = parseLatinToAksara(val);
-                hiddenStore.innerText = transformed; // Simpan untuk cadangan konversi sebaliknya
+                hiddenStore.innerText = transformed;
                 renderToCanvas(transformed, true);
             } else {
                 const transformed = parseAksaraToLatin(val);
@@ -391,16 +385,12 @@
 
         input.addEventListener('input', handleUpdate);
 
-        // Tunggu Font Selesai Dimuat Agar Canvas Merender Bentuk Pasangan Dengan Sempurna
         document.fonts.ready.then(() => {
             handleUpdate();
         });
 
-        // Aksi Tukar Mode (Switch)
         switchBtn.addEventListener('click', () => {
             isLatinToAksara = !isLatinToAksara;
-            
-            // Ambil teks hasil konversi dari penyimpanan tersembunyi
             const currentOutputText = hiddenStore.innerText;
             input.value = currentOutputText;
 
@@ -416,7 +406,6 @@
             handleUpdate();
         });
 
-        // Tombol Bersihkan
         clearBtn.addEventListener('click', () => {
             input.value = "";
             hiddenStore.innerText = "";
@@ -424,10 +413,9 @@
             input.focus();
         });
 
-        // Fungsi Salin Input
-        document.getElementById('copyInput').addEventListener('click', () => {
+        function copyToClipboard(text) {
             const el = document.createElement('textarea');
-            el.value = input.value;
+            el.value = text;
             document.body.appendChild(el);
             el.select();
             document.execCommand('copy');
@@ -435,15 +423,10 @@
             
             toast.style.opacity = '1';
             setTimeout(() => toast.style.opacity = '0', 2000);
-        });
+        }
 
-        // Fungsi Unduh Gambar Canvas (.png)
-        downloadBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = 'aksara-pahala-sadaya.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        });
+        document.getElementById('copyInput').addEventListener('click', () => copyToClipboard(input.value));
+        document.getElementById('copyOutput').addEventListener('click', () => copyToClipboard(hiddenStore.innerText));
     </script>
 </body>
 </html>
