@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shawibet Translator - Aksara Shavian Jawa/Indonesia</title>
+    
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Shawibet">
+    <meta name="application-name" content="Shawibet">
+    <meta name="description" content="Adaptasi Aksara Shavian untuk Bahasa Jawa & Indonesia">
+
+    <!-- Favicon & App Icons (Menggunakan Web App Icon SVG Data-URI) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234f46e5'/><text x='50%' y='68%' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif'>𐑒</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234f46e5'/><text x='50%' y='68%' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif'>𐑒</text></svg>">
+
+    <!-- Web App Manifest Dynamic Generator -->
+    <link rel="manifest" id="manifestLink">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .shavian-text {
+            font-size: 1.2em;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header & Navigasi -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-500/30">
+                    𐑒
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-emerald-400">
+                        Shawibet
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Adaptasi Aksara Shavian Jawa & Indonesia</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <!-- Tombol Install / Add to Home Screen -->
+                <button id="btnInstallApp" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-all">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                    <span id="btnInstallText">Pasang di HP</span>
+                </button>
+
+                <button id="btnToggleHelp" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Tabel Rujukan</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+        <!-- Baris Status Direction & Swap -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-800/60 p-4 rounded-2xl border border-slate-700/50">
+            <div class="flex items-center gap-3">
+                <span id="labelFrom" class="px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold text-sm">
+                    Latin
+                </span>
+                <i data-lucide="arrow-right" class="w-5 h-5 text-slate-400"></i>
+                <span id="labelTo" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold text-sm">
+                    Shawibet
+                </span>
+            </div>
+
+            <!-- Tombol Swap Utama -->
+            <button id="btnSwap" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl shadow-md transition-all active:scale-95">
+                <i data-lucide="arrow-right-left" class="w-4 h-4"></i>
+                <span>Tukar Arah Konversi</span>
+            </button>
+        </div>
+
+        <!-- Area Editor Konversi -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Panel Input -->
+            <div class="flex flex-col bg-slate-800/80 rounded-2xl border border-slate-700/80 overflow-hidden shadow-lg">
+                <div class="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700/80">
+                    <span id="titleInput" class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                        <i data-lucide="edit-3" class="w-4 h-4 text-indigo-400"></i>
+                        Input (Latin)
+                    </span>
+                    <div class="flex items-center gap-2">
+                        <button id="btnClear" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-700/50 rounded-lg transition-colors" title="Hapus Semua">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                        <button id="btnCopyInput" class="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-300 bg-slate-700/60 hover:bg-slate-700 rounded-lg transition-colors">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <span>Salin Input</span>
+                        </button>
+                    </div>
+                </div>
+                <textarea 
+                    id="inputText" 
+                    placeholder="Ketik atau tempel teks di sini..." 
+                    class="w-full h-48 md:h-56 p-4 bg-transparent resize-none focus:outline-none text-slate-100 placeholder-slate-500 font-normal leading-relaxed"
+                ></textarea>
+                <div class="px-4 py-2 bg-slate-800/40 border-t border-slate-700/50 flex justify-between text-xs text-slate-400">
+                    <span id="charCountInput">0 Karakter</span>
+                    <button id="btnSampleText" class="text-indigo-400 hover:underline">Isi Contoh Teks</button>
+                </div>
+            </div>
+
+            <!-- Panel Hasil -->
+            <div class="flex flex-col bg-slate-800/80 rounded-2xl border border-slate-700/80 overflow-hidden shadow-lg">
+                <div class="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700/80">
+                    <span id="titleOutput" class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+                        Hasil (Shawibet)
+                    </span>
+                    <button id="btnCopyOutput" class="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg transition-colors">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span>Salin Hasil</span>
+                    </button>
+                </div>
+                <textarea 
+                    id="outputText" 
+                    readonly 
+                    placeholder="Hasil konversi akan muncul di sini..." 
+                    class="w-full h-48 md:h-56 p-4 bg-slate-900/40 resize-none focus:outline-none text-slate-100 placeholder-slate-500 font-normal leading-relaxed shavian-text"
+                ></textarea>
+                <div class="px-4 py-2 bg-slate-800/40 border-t border-slate-700/50 flex justify-between text-xs text-slate-400">
+                    <span id="charCountOutput">0 Karakter</span>
+                    <span class="text-slate-500">Otomatis Terkonversi</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Virtual Keyboard untuk Aksara Shawibet -->
+        <div id="virtualKeyboardSection" class="bg-slate-800/40 rounded-2xl p-4 border border-slate-800 hidden">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <i data-lucide="keyboard" class="w-4 h-4"></i>
+                Papan Ketik Cepat Shawibet (Klik untuk Masukkan)
+            </h3>
+            <div id="keyboardButtons" class="flex flex-wrap gap-1.5">
+                <!-- Diisi via JS -->
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-6 right-6 px-4 py-2.5 bg-indigo-600 text-white rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span id="toastMsg" class="text-sm font-medium">Teks berhasil disalin!</span>
+        </div>
+
+    </main>
+
+    <!-- Modal Panduan Cara Pasang Shortcut / Install PWA -->
+    <div id="installModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i data-lucide="smartphone" class="w-5 h-5 text-emerald-400"></i>
+                    Cara Pasang di HP
+                </h2>
+                <button id="btnCloseInstallModal" class="p-1 text-slate-400 hover:text-white rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 text-sm text-slate-300">
+                <!-- Panduan Android -->
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-700/80 space-y-2">
+                    <h3 class="font-semibold text-indigo-400 flex items-center gap-1.5">
+                        <i data-lucide="chrome" class="w-4 h-4"></i> Android (Chrome / Edge):
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-1 text-xs text-slate-300">
+                        <li>Tekan titik tiga <b>(⋮)</b> di pojok kanan atas browser.</li>
+                        <li>Pilih <b>"Tambahkan ke Layar Utama"</b> atau <b>"Install Aplikasi"</b>.</li>
+                        <li>Konfirmasi pemasangan. Shortcut Shawibet akan muncul di HP Anda.</li>
+                    </ol>
+                </div>
+
+                <!-- Panduan iOS -->
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-700/80 space-y-2">
+                    <h3 class="font-semibold text-emerald-400 flex items-center gap-1.5">
+                        <i data-lucide="compass" class="w-4 h-4"></i> iPhone (Safari):
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-1 text-xs text-slate-300">
+                        <li>Tekan tombol <b>Bagikan (Share)</b> <i data-lucide="share" class="w-3 h-3 inline"></i> di bagian bawah.</li>
+                        <li>Gulir ke bawah dan pilih <b>"Tambah ke Layar Utama"</b> (Add to Home Screen).</li>
+                        <li>Tekan <b>Tambah</b> di pojok kanan atas.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="text-right pt-2">
+                <button id="btnGotIt" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors">
+                    Saya Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tabel Rujukan Pemetaan Shawibet -->
+    <div id="helpModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/90">
+                <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5 text-indigo-400"></i>
+                    Tabel Rujukan Shawibet
+                </h2>
+                <button id="btnCloseModal" class="p-1 text-slate-400 hover:text-white rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 overflow-y-auto space-y-6 text-sm">
+                <!-- Konsonan -->
+                <div>
+                    <h3 class="font-semibold text-indigo-300 border-b border-indigo-500/20 pb-1 mb-3">Konsonan Dasar</h3>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">p</span> = <span class="shavian-text text-lg font-bold">𐑐</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">b</span> = <span class="shavian-text text-lg font-bold">𐑚</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">t</span> = <span class="shavian-text text-lg font-bold">𐑑</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">d</span> = <span class="shavian-text text-lg font-bold">𐑛</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">k</span> = <span class="shavian-text text-lg font-bold">𐑒</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">g</span> = <span class="shavian-text text-lg font-bold">𐑜</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">v</span> = <span class="shavian-text text-lg font-bold">𐑓</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">f</span> = <span class="shavian-text text-lg font-bold">𐑝</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">s</span> = <span class="shavian-text text-lg font-bold">𐑕</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">z</span> = <span class="shavian-text text-lg font-bold">𐑟</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">c</span> = <span class="shavian-text text-lg font-bold">𐑗</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">j</span> = <span class="shavian-text text-lg font-bold">𐑡</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">y</span> = <span class="shavian-text text-lg font-bold">𐑘</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">w</span> = <span class="shavian-text text-lg font-bold">𐑢</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">ng</span> = <span class="shavian-text text-lg font-bold">𐑙</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">h</span> = <span class="shavian-text text-lg font-bold">𐑣</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">l</span> = <span class="shavian-text text-lg font-bold">𐑤</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">r</span> = <span class="shavian-text text-lg font-bold">𐑮</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">m</span> = <span class="shavian-text text-lg font-bold">𐑥</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">n</span> = <span class="shavian-text text-lg font-bold">𐑯</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">sy</span> = <span class="shavian-text text-lg font-bold">𐑭</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">kh</span> = <span class="shavian-text text-lg font-bold">𐑒𐑣</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">ny</span> = <span class="shavian-text text-lg font-bold">𐑿</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-indigo-400 font-mono">x</span> = <span class="shavian-text text-lg font-bold">𐑒𐑕</span></div>
+                    </div>
+                </div>
+
+                <!-- Vokal & Diftong -->
+                <div>
+                    <h3 class="font-semibold text-emerald-300 border-b border-emerald-500/20 pb-1 mb-3">Vokal & Diftong</h3>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">a</span> = <span class="shavian-text text-lg font-bold">𐑪</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">i</span> = <span class="shavian-text text-lg font-bold">𐑴</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">u</span> = <span class="shavian-text text-lg font-bold">𐑻</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">e / ké</span> = <span class="shavian-text text-lg font-bold">𐑧</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">o</span> = <span class="shavian-text text-lg font-bold">𐑺</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">q</span> = <span class="shavian-text text-lg font-bold">𐑷</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">kai</span> = <span class="shavian-text text-lg font-bold">𐑪𐑴</span></div>
+                        <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-700"><span class="text-emerald-400 font-mono">kau</span> = <span class="shavian-text text-lg font-bold">𐑪𐑻</span></div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="p-4 bg-slate-800/90 border-t border-slate-700 text-right">
+                <button id="btnCloseModalBottom" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logika Aplikasi & PWA Generator -->
+    <script>
+        lucide.createIcons();
+
+        // Generate PWA Web Manifest Secara Otomatis via Blob URL
+        (function setupDynamicPWA() {
+            const manifestData = {
+                name: "Shawibet Translator",
+                short_name: "Shawibet",
+                description: "Adaptasi Aksara Shavian untuk Jawa dan Indonesia",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [
+                    {
+                        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234f46e5'/><text x='50%' y='68%' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif'>𐑒</text></svg>",
+                        sizes: "512x512",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+            const stringManifest = JSON.stringify(manifestData);
+            const blob = new Blob([stringManifest], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(blob);
+            document.getElementById('manifestLink').setAttribute('href', manifestUrl);
+        })();
+
+        // Handler PWA Installation Prompt (Bawaan Browser jika didukung)
+        let deferredPrompt;
+        const btnInstallApp = document.getElementById('btnInstallApp');
+        const installModal = document.getElementById('installModal');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            btnInstallApp.classList.remove('hidden');
+        });
+
+        btnInstallApp.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast('Aplikasi Shawibet berhasil dipasang!');
+                }
+                deferredPrompt = null;
+            } else {
+                // Tampilkan Modal Panduan jika browser tidak mendukung tombol otomatis langsung
+                installModal.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('btnCloseInstallModal').addEventListener('click', () => installModal.classList.add('hidden'));
+        document.getElementById('btnGotIt').addEventListener('click', () => installModal.classList.add('hidden'));
+
+        // Variable & Rules Translator
+        let currentMode = 'latinToShawibet';
+
+        const mappingRulesLatinToShawibet = [
+            { latin: 'kai', shavian: '𐑪𐑴' },
+            { latin: 'kau', shavian: '𐑪𐑻' },
+            { latin: 'kh', shavian: '𐑒𐑣' },
+            { latin: 'sy', shavian: '𐑭' },
+            { latin: 'ny', shavian: '𐑿' },
+            { latin: 'ng', shavian: '𐑙' },
+            { latin: 'ké', shavian: '𐑧' },
+            { latin: 'é', shavian: '𐑧' },
+            { latin: 'x', shavian: '𐑒𐑕' },
+            { latin: 'p', shavian: '𐑐' },
+            { latin: 'b', shavian: '𐑚' },
+            { latin: 't', shavian: '𐑑' },
+            { latin: 'd', shavian: '𐑛' },
+            { latin: 'k', shavian: '𐑒' },
+            { latin: 'g', shavian: '𐑜' },
+            { latin: 'v', shavian: '𐑓' },
+            { latin: 'f', shavian: '𐑝' },
+            { latin: 's', shavian: '𐑕' },
+            { latin: 'z', shavian: '𐑟' },
+            { latin: 'c', shavian: '𐑗' },
+            { latin: 'j', shavian: '𐑡' },
+            { latin: 'y', shavian: '𐑘' },
+            { latin: 'w', shavian: '𐑢' },
+            { latin: 'h', shavian: '𐑣' },
+            { latin: 'l', shavian: '𐑤' },
+            { latin: 'r', shavian: '𐑮' },
+            { latin: 'm', shavian: '𐑥' },
+            { latin: 'n', shavian: '𐑯' },
+            { latin: 'e', shavian: '𐑧' },
+            { latin: 'a', shavian: '𐑪' },
+            { latin: 'i', shavian: '𐑴' },
+            { latin: 'o', shavian: '𐑺' },
+            { latin: 'u', shavian: '𐑻' },
+            { latin: 'q', shavian: '𐑷' }
+        ];
+
+        const mappingRulesShawibetToLatin = [
+            { shavian: '𐑒𐑕', latin: 'x' },
+            { shavian: '𐑒𐑣', latin: 'kh' },
+            { shavian: '𐑒̥', latin: 'ki' },
+            { shavian: '𐑪𐑴', latin: 'kai' },
+            { shavian: '𐑪𐑻', latin: 'kau' },
+            { shavian: '𐑐', latin: 'p' },
+            { shavian: '𐑚', latin: 'b' },
+            { shavian: '𐑑', latin: 't' },
+            { shavian: '𐑛', latin: 'd' },
+            { shavian: '𐑒', latin: 'k' },
+            { shavian: '𐑜', latin: 'g' },
+            { shavian: '𐑓', latin: 'v' },
+            { shavian: '𐑝', latin: 'f' },
+            { shavian: '𐑕', latin: 's' },
+            { shavian: '𐑟', latin: 'z' },
+            { shavian: '𐑗', latin: 'c' },
+            { shavian: '𐑡', latin: 'j' },
+            { shavian: '𐑘', latin: 'y' },
+            { shavian: '𐑢', latin: 'w' },
+            { shavian: '𐑙', latin: 'ng' },
+            { shavian: '𐑣', latin: 'h' },
+            { shavian: '𐑤', latin: 'l' },
+            { shavian: '𐑮', latin: 'r' },
+            { shavian: '𐑥', latin: 'm' },
+            { shavian: '𐑯', latin: 'n' },
+            { shavian: '𐑧', latin: 'e' },
+            { shavian: '𐑪', latin: 'a' },
+            { shavian: '𐑴', latin: 'i' },
+            { shavian: '𐑺', latin: 'o' },
+            { shavian: '𐑻', latin: 'u' },
+            { shavian: '𐑷', latin: 'q' },
+            { shavian: '𐑭', latin: 'sy' },
+            { shavian: '𐑿', latin: 'ny' }
+        ];
+
+        const shavianSymbols = [
+            '𐑐', '𐑚', '𐑑', '𐑛', '𐑒', '𐑜', '𐑓', '𐑝', 
+            '𐑕', '𐑟', '𐑗', '𐑡', '𐑘', '𐑢', '𐑙', '𐑣', 
+            '𐑤', '𐑮', '𐑥', '𐑯', '𐑧', '𐑪', '𐑴', '𐑺', 
+            '𐑻', '𐑷', '𐑭', '𐑒𐑣', '𐑿', '𐑒𐑕'
+        ];
+
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const btnSwap = document.getElementById('btnSwap');
+        const btnCopyInput = document.getElementById('btnCopyInput');
+        const btnCopyOutput = document.getElementById('btnCopyOutput');
+        const btnClear = document.getElementById('btnClear');
+        const btnSampleText = document.getElementById('btnSampleText');
+        const labelFrom = document.getElementById('labelFrom');
+        const labelTo = document.getElementById('labelTo');
+        const titleInput = document.getElementById('titleInput');
+        const titleOutput = document.getElementById('titleOutput');
+        const charCountInput = document.getElementById('charCountInput');
+        const charCountOutput = document.getElementById('charCountOutput');
+        const virtualKeyboardSection = document.getElementById('virtualKeyboardSection');
+        const keyboardButtons = document.getElementById('keyboardButtons');
+
+        const helpModal = document.getElementById('helpModal');
+        const btnToggleHelp = document.getElementById('btnToggleHelp');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const btnCloseModalBottom = document.getElementById('btnCloseModalBottom');
+
+        function latinToShawibet(text) {
+            if (!text) return '';
+            let result = text;
+            mappingRulesLatinToShawibet.forEach(rule => {
+                const regex = new RegExp(rule.latin, 'gi');
+                result = result.replace(regex, rule.shavian);
+            });
+            return result;
+        }
+
+        function shawibetToLatin(text) {
+            if (!text) return '';
+            let result = text;
+            mappingRulesShawibetToLatin.forEach(rule => {
+                const regex = new RegExp(rule.shavian, 'g');
+                result = result.replace(regex, rule.latin);
+            });
+            return result;
+        }
+
+        function processConversion() {
+            const inputVal = inputText.value;
+            let outputVal = currentMode === 'latinToShawibet' ? latinToShawibet(inputVal) : shawibetToLatin(inputVal);
+            outputText.value = outputVal;
+            updateCharCounts();
+        }
+
+        function updateCharCounts() {
+            charCountInput.textContent = `${inputText.value.length} Karakter`;
+            charCountOutput.textContent = `${outputText.value.length} Karakter`;
+        }
+
+        function swapMode() {
+            const currentInputValue = inputText.value;
+            const currentOutputValue = outputText.value;
+
+            if (currentMode === 'latinToShawibet') {
+                currentMode = 'shawibetToLatin';
+                labelFrom.textContent = 'Shawibet';
+                labelFrom.className = 'px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold text-sm';
+                labelTo.textContent = 'Latin';
+                labelTo.className = 'px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold text-sm';
+
+                titleInput.innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-emerald-400"></i> Input (Shawibet)`;
+                titleOutput.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i> Hasil (Latin)`;
+                
+                inputText.classList.add('shavian-text');
+                outputText.classList.remove('shavian-text');
+                virtualKeyboardSection.classList.remove('hidden');
+            } else {
+                currentMode = 'latinToShawibet';
+                labelFrom.textContent = 'Latin';
+                labelFrom.className = 'px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold text-sm';
+                labelTo.textContent = 'Shawibet';
+                labelTo.className = 'px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold text-sm';
+
+                titleInput.innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-indigo-400"></i> Input (Latin)`;
+                titleOutput.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i> Hasil (Shawibet)`;
+
+                inputText.classList.remove('shavian-text');
+                outputText.classList.add('shavian-text');
+                virtualKeyboardSection.classList.add('hidden');
+            }
+
+            inputText.value = currentOutputValue;
+            processConversion();
+            lucide.createIcons();
+            showToast(`Mode diubah: ${currentMode === 'latinToShawibet' ? 'Latin ➔ Shawibet' : 'Shawibet ➔ Latin'}`);
+        }
+
+        function copyToClipboard(text, message) {
+            if (!text) {
+                showToast('Teks kosong, tidak ada yang disalin!');
+                return;
+            }
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = text;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            try {
+                document.execCommand('copy');
+                showToast(message || 'Teks berhasil disalin!');
+            } catch (err) {
+                showToast('Gagal menyalin teks.');
+            }
+            document.body.removeChild(tempTextArea);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        function renderVirtualKeyboard() {
+            keyboardButtons.innerHTML = '';
+            shavianSymbols.forEach(symbol => {
+                const btn = document.createElement('button');
+                btn.className = 'px-3 py-1.5 bg-slate-800 hover:bg-slate-700 active:bg-emerald-600 rounded-lg border border-slate-700 shavian-text text-base font-semibold transition-colors';
+                btn.textContent = symbol;
+                btn.addEventListener('click', () => {
+                    inputText.value += symbol;
+                    processConversion();
+                });
+                keyboardButtons.appendChild(btn);
+            });
+        }
+
+        inputText.addEventListener('input', processConversion);
+        btnSwap.addEventListener('click', swapMode);
+        btnCopyInput.addEventListener('click', () => copyToClipboard(inputText.value, 'Teks Input berhasil disalin!'));
+        btnCopyOutput.addEventListener('click', () => copyToClipboard(outputText.value, 'Teks Hasil berhasil disalin!'));
+        btnClear.addEventListener('click', () => {
+            inputText.value = '';
+            processConversion();
+            showToast('Teks dibersihkan');
+        });
+
+        btnSampleText.addEventListener('click', () => {
+            if (currentMode === 'latinToShawibet') {
+                inputText.value = 'Sugeng rawuh ing aplikasi Shawibet. Selamat datang di Indonesia!';
+            } else {
+                inputText.value = '𐑕𐑻𐑜𐑧𐑙 𐑮𐑪𐑢𐑻𐑣 𐑴𐑙 𐑪𐑐𐑤𐑴𐑒𐑪𐑕𐑴 Shawibet.';
+            }
+            processConversion();
+        });
+
+        btnToggleHelp.addEventListener('click', () => helpModal.classList.remove('hidden'));
+        btnCloseModal.addEventListener('click', () => helpModal.classList.add('hidden'));
+        btnCloseModalBottom.addEventListener('click', () => helpModal.classList.add('hidden'));
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) helpModal.classList.add('hidden');
+        });
+
+        renderVirtualKeyboard();
+        updateCharCounts();
+    </script>
+</body>
+</html>
